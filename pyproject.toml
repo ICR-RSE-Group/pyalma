@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "twine", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sshconnection"
+version = "0.1.0"
+description = "A simple SSH connection package"
+authors = [{name = "RSE team", email = "mira.sarkis@icr.ac.uk"}]
+
+[tool.setuptools]
+packages = ["sshconnection"]
+
+[tool.setuptools.package-data]
+sshconnection = ["*.py"]
+
+[project.scripts]
+sshconnection-cli = 'sshconnection.sshconnection:main'

@@ -53,7 +53,7 @@ def main():
         print(output)
 
 class SshConnection:
-    def __init__(self, source, server="alma.icr.ac.uk", username=None, password=None, key_path=None):
+    def __init__(self, source, server="alma-app.icr.ac.uk", username=None, password=None, key_path=None):
         """
         Initializes the SSH connection instance.
 
@@ -93,7 +93,7 @@ class SshConnection:
             logging.error(f"Error loading key: {e}")
             return None
         
-    def run_cmd(self, cmd, is_string=True, sep=","):
+    def run_cmd(self, cmd, is_string=True, sep=",", listdir=False):
         """
         Runs a command either locally or remotely via SSH.
 
@@ -102,9 +102,9 @@ class SshConnection:
         :return: Command output as string or pandas DataFrame
         """
         if self.source == "local":
-            return self.run_local(cmd)
+            return self.run_local(cmd)#add support for listdir and csv reading
         else:
-            return self.run_remote(cmd, is_string, sep)
+            return self.run_remote(cmd, is_string, sep, listdir)
 
     def run_local(self, cmd):
         """
@@ -121,7 +121,7 @@ class SshConnection:
             logging.error(f"Error running local command: {e}")
             return str(e)
 
-    def run_remote(self, cmd, is_string=True, sep=","):
+    def run_remote(self, cmd, is_string=True, sep=",", listdir=False):
         """
         Executes a command on the remote server via SSH.
 
@@ -141,13 +141,15 @@ class SshConnection:
                 if self.key_path:
                     private_key = self._load_private_key()
                     client.connect(self.server, username=self.username, pkey=private_key)
-
-                if not is_string:
-                    # Use SFTP to retrieve the file as a Dataframe
+                if not is_string or listdir:
+                    #Use SFTP to retrieve the file as a Dataframe. sftp is not working for listdir
                     with client.open_sftp() as sftp:
+                        if listdir:
+                            files = sftp.listdir(cmd)
+                            return files, ""
+                        #reading files
                         with sftp.open(cmd, 'r') as remote_file:
                             file_content = remote_file.read().decode('utf-8')
-                            #test stringIO vs bytesIO
                             df = pd.read_csv(StringIO(file_content), sep=sep)
                             return df, ""
                 else:
@@ -155,11 +157,12 @@ class SshConnection:
                     _, stdout, stderr = client.exec_command(cmd, get_pty=True)
                     err_str = stderr.read().decode("ascii")
                     out_str = stdout.read().decode("ascii")
+
                     return out_str, err_str
 
         except Exception as e:
             logging.error(f"Error running remote command: {e}")
             return "", str(e)
-        
+    
 if __name__ == "__main__":
     main()

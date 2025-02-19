@@ -3,9 +3,11 @@ import sys
 import pandas as pd
 import paramiko
 import logging
-from io import StringIO
+from io import StringIO, BytesIO
 import argparse
 from stat import S_ISDIR, S_ISREG
+import pysam
+import tempfile 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path)
@@ -61,7 +63,7 @@ class SshConnection:
         self.username = username.strip() if username else None
         self.password = password.strip() if password else None
         
-    def run_cmd(self, cmd, is_string=True, sep=",", listdir=False):
+    def run_cmd(self, cmd, is_string=True, sep=","):
         """
         Runs a command either locally or remotely via SSH.
 
@@ -72,7 +74,7 @@ class SshConnection:
         if self.source == "local":
             return self.run_local(cmd)#add support for listdir and csv reading
         else:
-            return self.run_remote(cmd, is_string, sep, listdir)
+            return self.run_remote(cmd, is_string, sep)
 
     def run_local(self, cmd):
         """
@@ -88,8 +90,70 @@ class SshConnection:
         except Exception as e:
             logging.error(f"Error running local command: {e}")
             return str(e)
+        
+    #by default list all directories within a path
+    def listdir(self, path):
+        try:
+            with paramiko.SSHClient() as client:
+                client.load_system_host_keys()
+                client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                client.connect(self.server, username=self.username, password=self.password, timeout=30)
+                #Use SFTP to retrieve the file as a Dataframe. sftp is not working for listdir
+                with client.open_sftp() as sftp:
+                    directories = []
+                    files = []
+                    # List directory contents with attributes
+                    for entry in sftp.listdir_attr(path):
+                        mode = entry.st_mode
+                        if S_ISDIR(mode):
+                            directories.append(entry.filename)
+                        elif S_ISREG(mode):
+                            files.append(entry.filename)
+                    return directories, files   
+        except Exception as e:
+            logging.error(f"Error running remote command: {e}")
+            return "", str(e)
+    def read_vcf_file_into_df(self, local_path):
+        vcf_in = pysam.VariantFile(local_path)
+        return vcf_in
+    def decode_file_by_type(self, file_content, type, sep=",", header=None, colnames=[], on_bad_lines='skip'):
+        if type in ["csv", "tsv", "bed"]:
+            return pd.read_csv(StringIO(file_content.decode('utf-8')), sep=sep, header=header, names=colnames, on_bad_lines=on_bad_lines)
+        # if type in ["vcf"]: # replaced by a download to a local folder
+        #     vcf_buffer = BytesIO(file_content)
+        #     # Use pysam to read the VCF data from the buffer
+        #     return pysam.VariantFile(vcf_buffer, 'r')#read binary
+        else:
+            print("file type not supported")
+        
+    # read any file of any type, locally or remotely
+    # return a dataframe
+    #note: need to think if I should keep the connection opened?! 
+    def read_file_into_df(self, path, type, sep=",", header=None, colnames=[], on_bad_lines='skip'):
+        try:
+            with paramiko.SSHClient() as client:
+                client.load_system_host_keys()
+                client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                client.connect(self.server, username=self.username, password=self.password, timeout=30)
+                #Use SFTP to retrieve the file as a Dataframe. sftp is not working for listdir
+                with client.open_sftp() as sftp:
+                    if type in ["vcf"]:# option under testing
+                        with tempfile.TemporaryDirectory() as tmpdirname:
+                            print('created temporary directory', tmpdirname)
+                            local_file = tmpdirname+"tmp.vcf"
+                            sftp.get(path, local_file)#download file locally
+                            return self.read_vcf_file_into_df(local_file)
 
-    def run_remote(self, cmd, is_string=True, sep=",", listdir=False):
+                    #reading files
+                    with sftp.open(path, 'r') as remote_file:
+                        file_content = remote_file.read()
+                        return self.decode_file_by_type(file_content, type, sep, header, colnames, on_bad_lines)
+        except Exception as e:
+            logging.error(f"Error running remote command: {e}")
+            return "", str(e)               
+
+
+    def run_remote(self, cmd, is_string=True, sep=","):
         """
         Executes a command on the remote server via SSH.
 
@@ -107,26 +171,9 @@ class SshConnection:
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(self.server, username=self.username, password=self.password, timeout=30)
 
-                if not is_string or listdir:
+                if not is_string:
                     #Use SFTP to retrieve the file as a Dataframe. sftp is not working for listdir
                     with client.open_sftp() as sftp:
-                        if listdir:
-                            directories = []
-                            files = []
-                            # List directory contents with attributes
-                            for entry in sftp.listdir_attr(cmd):
-                                mode = entry.st_mode
-                                if S_ISDIR(mode):
-                                    directories.append(entry.filename)
-                                elif S_ISREG(mode):
-                                    files.append(entry.filename)
-                                """
-                                if listdir:
-                                    files = sftp.listdir(cmd)
-                                    return files, ""
-                                """
-                            return directories, files
-
                         #reading files
                         with sftp.open(cmd, 'r') as remote_file:
                             file_content = remote_file.read().decode('utf-8')

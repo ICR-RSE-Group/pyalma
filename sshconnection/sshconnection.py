@@ -3,10 +3,11 @@ import paramiko
 import logging
 import argparse
 import pandas as pd
-from io import StringIO
+from io import StringIO, BytesIO
 from stat import S_ISDIR, S_ISREG
 import pysam
 import tempfile 
+import PyPDF2
 
 # Configure logging for better traceability
 logging.basicConfig(level=logging.DEBUG)
@@ -24,10 +25,13 @@ class FileReader:
 
 class LocalFileReader(FileReader):
     """Reads local files and executes local commands."""
-    def read_file(self, path):
+    def read_file(self, path, type=None):
         try:
             with open(path, 'r') as file:
-                return file.read()
+                content = file.read()
+                if type is not None:
+                    content = decode_file_by_type(content, type)
+                return content
         except Exception as e:
             logging.error(f"Error reading local file {path}: {e}")
             return None
@@ -80,12 +84,14 @@ class SshConnection(FileReader):
         client.connect(self.server, username=self.username, password=self.password, timeout=30)
         return client
     
-    def read_file(self, path):
+    def read_file(self, path, type=None):
         try:
             client = self._connect()
             sftp = client.open_sftp()
             with sftp.file(path, 'r') as file:
-                content = file.read().decode()
+                content = file.read()
+                if type is not None:
+                    content = decode_file_by_type(content, type)
             sftp.close()
             client.close()
             return content
@@ -157,8 +163,17 @@ def decode_file_by_type(content, type, sep=",", header=None, colnames=[], on_bad
         return pd.read_csv(StringIO(content.decode('utf-8')), sep=sep, header=header, names=colnames, on_bad_lines=on_bad_lines)
         #elif type == 'vcf':
         #    return pd.read_csv(StringIO(content), comment='#', delimiter='\t')
+    elif type in ["pdf"]:
+        pdf_file = BytesIO(content)
+        reader = PyPDF2.PdfReader(pdf_file)
+        # num_pages = len(reader.pages)
+        # if num_pages > 0:
+        #     page = reader.pages[0]
+        #     print(page.extract_text())  # Extract and print the text from the first page
+
+        return reader
     else:
-        return content
+        return content.decode()
 def read_vcf_file_into_df(path):
     vcf_in = pysam.VariantFile(path)
     return vcf_in

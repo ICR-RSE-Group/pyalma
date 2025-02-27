@@ -23,6 +23,10 @@ class FileReader:
         raise NotImplementedError("Subclasses must implement read_file_into_df")
 
 class LocalFileReader(FileReader):
+    #optional command dict
+    def __init__(self, cmd_dict={}):
+        self.cmd_dict = cmd_dict
+
     """Reads local files and executes local commands."""
     def read_file(self, path):
         try:
@@ -45,7 +49,7 @@ class LocalFileReader(FileReader):
             logging.error(f"Error listing directory {path}: {e}")
             return []
     
-    def run_cmd(self, command):
+    def run_cmd(self, command: str):
         try:
             result = os.popen(command).read()
             print(result)
@@ -53,6 +57,14 @@ class LocalFileReader(FileReader):
         except Exception as e:
             logging.error(f"Error executing command {command}: {e}")
             return {"output": None, "err": str(e)}
+        
+    #pipe_cmd: to be renamed to cmd_name
+    def pipe_cmd(self, cmd_num: int, *args, **kwargs):
+        command = self.cmd_dict[cmd_num]
+        formatted_command = command.format(**kwargs)
+        print(formatted_command)
+        return formatted_command#self.run_cmd(formatted_command)#requires testing
+    
     def read_file_into_df(self, path, type, sep=",", header=None, colnames=[], on_bad_lines='skip'):
         try:
             if type == "vcf":
@@ -68,10 +80,11 @@ class SshConnection(FileReader):
         :param server: The remote server address (default is 'alma.icr.ac.uk')
     """
     #use alma-app since it has an sftp server
-    def __init__(self, server="alma-app.icr.ac.uk", username=None, password=None):
+    def __init__(self, server="alma-app.icr.ac.uk", username=None, password=None, cmd_dict={}):
         self.server = server.strip()
         self.username = username.strip() if username else None
         self.password = password.strip() if password else None
+        self.cmd_dict = cmd_dict
     
     def _connect(self):
         client = paramiko.SSHClient()
@@ -114,7 +127,7 @@ class SshConnection(FileReader):
             logging.error(f"Error listing SSH directory {path}: {e}")
             return []
     
-    def run_cmd(self, command):
+    def run_cmd(self, command: str):
         """
         Executes a command on the remote server via SSH.
 
@@ -132,6 +145,13 @@ class SshConnection(FileReader):
             logging.error(f"Error executing SSH command {command}: {e}")
             return {"output":None,"err":str(e)}
 
+    #pipe_cmd: to be renamed to cmd_name
+    def pipe_cmd(self, cmd_num: int, *args, **kwargs):
+        command = self.cmd_dict[cmd_num]
+        formatted_command = command.format(**kwargs)
+        print(formatted_command)
+        return formatted_command#self.run_cmd(formatted_command)#requires testing
+    
     def read_file_into_df(self, path, type, sep=",", header=None, colnames=[], on_bad_lines='skip'):
         try:
             client = self._connect()

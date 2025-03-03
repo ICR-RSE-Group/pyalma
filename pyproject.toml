@@ -3,16 +3,16 @@ requires = ["setuptools>=42", "wheel", "twine", "build"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sshconnection"
+name = "pyalma"
 version = "0.1.0"
 description = "A simple SSH connection package"
 authors = [{name = "RSE team", email = "mira.sarkis@icr.ac.uk"}]
 
 [tool.setuptools]
-packages = ["sshconnection"]
+packages = ["pyalma"]
 
 [tool.setuptools.package-data]
-sshconnection = ["*.py"]
+pyalma = ["*.py"]
 
 [project.scripts]
-sshconnection-cli = 'sshconnection.cli:main'
+pyalma-cli = 'pyalma.cli:main'

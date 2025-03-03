@@ -4,9 +4,9 @@ A Python library for SSH connections and remote command execution using Paramiko
 
 ## For remote access, from within python
 ```
-from pyalma import SshConnection
+from pyalma import SshClient
 
-ssh = SshConnection(server='your_server', username='your_username', password='your_password')
+ssh = SshClient(server='your_server', username='your_username', password='your_password')
 result = ssh.run_cmd('ls -l')
 print(result["output"])
 ```

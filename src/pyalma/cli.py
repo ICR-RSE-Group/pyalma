@@ -1,6 +1,6 @@
 import argparse
 from .local import LocalFileReader
-from .ssh import SshConnection
+from .ssh import SshClient
 
 def main():
     parser = argparse.ArgumentParser(description="File Reader")
@@ -19,7 +19,7 @@ def main():
         if content:
             print("Local File Content:\n", content)
     elif args.ssh and args.host and args.user and args.password:
-        reader = SshConnection(args.host, args.user, args.password)
+        reader = SshClient(args.host, args.user, args.password)
         content = reader.read_file(args.ssh)
         if content:
             print("Remote File Content:\n", content)

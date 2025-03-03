@@ -8,7 +8,7 @@ from .fileReader import FileReader
 # Configure logging for better traceability
 logging.basicConfig(level=logging.DEBUG)
 
-class SshConnection(FileReader):
+class SshClient(FileReader):
     """Initializes the SSH connection instance.
         :param username: SSH username for alma
         :param password: SSH password for alma

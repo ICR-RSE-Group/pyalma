@@ -1,6 +1,6 @@
 import argparse
-from local import LocalFileReader
-from ssh import SshConnection
+from .local import LocalFileReader
+from .ssh import SshConnection
 
 def main():
     parser = argparse.ArgumentParser(description="File Reader")

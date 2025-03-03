@@ -15,4 +15,4 @@ packages = ["sshconnection"]
 sshconnection = ["*.py"]
 
 [project.scripts]
-sshconnection-cli = 'sshconnection.sshconnection:main'
+sshconnection-cli = 'sshconnection.cli:main'

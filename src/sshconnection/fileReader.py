@@ -4,6 +4,9 @@ from io import StringIO
 
 class FileReader:
     """Base class for reading files."""
+    # def __init__(self, arg): #later use
+    #     self.arg = arg
+    
     def read_file(self, path):
         raise NotImplementedError("Subclasses must implement read_file")
     

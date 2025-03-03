@@ -1,4 +1,4 @@
-from fileReader import FileReader
+from .fileReader import FileReader
 import logging
 import pandas as pd
 import os
@@ -6,6 +6,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 class LocalFileReader(FileReader):
     """Reads local files and executes local commands."""
+    #def __init__(self, arg):
+    #    super().__init__(arg)
+
     def read_file(self, path):
         try:
             with open(path, 'r') as file:

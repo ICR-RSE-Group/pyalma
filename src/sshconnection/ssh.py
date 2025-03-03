@@ -3,7 +3,7 @@ import paramiko
 import logging
 from stat import S_ISDIR, S_ISREG
 import tempfile 
-from fileReader import FileReader
+from .fileReader import FileReader
 
 # Configure logging for better traceability
 logging.basicConfig(level=logging.DEBUG)
@@ -19,6 +19,7 @@ class SshConnection(FileReader):
         self.server = server.strip()
         self.username = username.strip() if username else None
         self.password = password.strip() if password else None
+        # super().__init__(arg)# will be useful later
     
     def _connect(self):
         client = paramiko.SSHClient()

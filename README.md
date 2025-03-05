@@ -6,8 +6,8 @@ A Python library for SSH connections and remote command execution using Paramiko
 Before building and installing the package, it is recommended to create a dedicated Python environment for your project.
 1. Create a Python Environment and activate it:
 ```bash
-python -m venv py-venv
-source py-venv/bin/activate
+python -m venv .env-py
+source .env-py/bin/activate
 ```
 
 2. Install Build Dependencies

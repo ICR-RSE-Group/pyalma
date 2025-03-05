@@ -15,25 +15,13 @@ class SshClient(FileReader):
         :param server: The remote server address (default is 'alma.icr.ac.uk')
     """
     #use alma-app since it has an sftp server
-    def __init__(self, server="alma-app.icr.ac.uk", username=None, password=None):
+    def __init__(self, server="alma-app.icr.ac.uk", username=None, password=None, ssh=False):
         self.server = server.strip()
         self.username = username.strip() if username else None
         self.password = password.strip() if password else None                
-        # super().__init__(arg)# will be useful later
-        self.authentication = None
-        self.ssh = False
-        try:
-            self._connect(ssh=True)
-            self.authentication = "ssh"
-            self.ssh = True
-        except Exception as e:
-            try:
-                self._connect(ssh=False)
-                self.authentication = "password"
-            except:
-                self.authentication = "failed"
-            
-            
+        # super().__init__(arg)# will be useful later        
+        self.ssh = ssh
+                        
     def _connect(self,ssh=False):
         client = paramiko.SSHClient()
         client.load_system_host_keys()

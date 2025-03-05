@@ -38,11 +38,21 @@ class SshClient(FileReader):
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if ssh:
-            client.connect(self.server, username=self.username, password=self.password, timeout=30)
-        else:
-            client.connect(self.server, username=self.username, timeout=30)
-        return client
+        try:
+            if ssh:
+                client.connect(self.server, username=self.username, password=self.password, timeout=30)
+            else:
+                client.connect(self.server, username=self.username, timeout=30)
+            return client
+        
+        except paramiko.AuthenticationException:
+            raise ConnectionError(f"Authentication failed for {self.username}@{self.server}. Please check your credentials.")
+        
+        except paramiko.SSHException as e:
+            raise ConnectionError(f"SSH connection error: {e}. Please check the server or the SSH configuration.")
+        
+        except Exception as e:
+            raise ConnectionError(f"An unexpected error occurred: {e}")
     
     def read_file(self, path):
         try:

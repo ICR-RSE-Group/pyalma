@@ -2,6 +2,38 @@
 
 A Python library for SSH connections and remote command execution using Paramiko.
 
+## To build and install the package locally:
+Before building and installing the package, it is recommended to create a dedicated Python environment for your project.
+1. Create a Python Environment and activate it:
+```bash
+python -m venv py-venv
+source py-venv/bin/activate
+```
+
+2. Install Build Dependencies
+```bash
+python -m pip install --upgrade pip setuptools wheel
+```
+
+3. Clone this repo locally to your machine:
+```bash
+git clone git@github.com:ICR-RSE-Group/sshconnection.git
+```
+4. Build the Package Locally:
+Make sure to navigate to the package directory before building
+```bash
+cd sshconnection
+python -m pip wheel --no-deps .
+```
+5. Install locally using `pip`:
+```bash
+pip install -e .
+```
+
+### For command line,
+```bash
+pyalma-cli --cmd "ls -l"
+```
 ## For remote access, from within python
 ```
 from pyalma import SshClient
@@ -20,17 +52,3 @@ output, error = local.run_cmd('ls -l')
 print(result["output"])
 ```
 
-### For command line,
-```bash
-pyalma-cli --cmd "ls -l"
-```
-## To build the package locally:
-
-```bash
-python -m pip wheel --no-deps .
-```
-
-## To install locally using `pip`:
-```bash
-pip install -e .
-```

@@ -12,7 +12,7 @@ source py-venv/bin/activate
 
 2. Install Build Dependencies
 ```bash
-python -m pip install --upgrade pip setuptools wheel
+python -m pip install --upgrade pip build
 ```
 
 3. Clone this repo locally to your machine:
@@ -23,7 +23,7 @@ git clone git@github.com:ICR-RSE-Group/sshconnection.git
 Make sure to navigate to the package directory before building
 ```bash
 cd sshconnection
-python -m pip wheel --no-deps .
+python -m build
 ```
 5. Install locally using `pip`:
 ```bash

@@ -17,12 +17,12 @@ python -m pip install --upgrade pip build
 
 3. Clone this repo locally to your machine:
 ```bash
-git clone git@github.com:ICR-RSE-Group/sshconnection.git
+git clone git@github.com:ICR-RSE-Group/pyalma.git
 ```
 4. Build the Package Locally:
 Make sure to navigate to the package directory before building
 ```bash
-cd sshconnection
+cd pyalma
 python -m build
 ```
 5. Install locally using `pip`:

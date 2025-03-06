@@ -1,0 +1,5 @@
+.env-py
+pyalma.egg-info/*
+pyalma/__pycache__/*
+dist/*
+.gitignore

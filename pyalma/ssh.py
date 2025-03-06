@@ -15,24 +15,19 @@ class SshClient(FileReader):
         :param server: The remote server address (default is 'alma.icr.ac.uk')
     """
     #use alma-app since it has an sftp server
-    def __init__(self, server="alma-app.icr.ac.uk", username=None, password=None, ssh=False):
+    def __init__(self, server="alma-app.icr.ac.uk", username=None, password=None):
         self.server = server.strip()
         self.username = username.strip() if username else None
         self.password = password.strip() if password else None                
         # super().__init__(arg)# will be useful later        
-        self.ssh = ssh
-                        
-    def _connect(self,ssh=False):
+                                
+    def _connect(self):
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            if ssh:
-                client.connect(self.server, username=self.username, password=self.password, timeout=30)
-            else:
-                client.connect(self.server, username=self.username, timeout=30)
-            return client
-        
+        try:            
+            client.connect(self.server, username=self.username, password=self.password, timeout=30)            
+            return client        
         except paramiko.AuthenticationException:
             raise ConnectionError(f"Authentication failed for {self.username}@{self.server}. Please check your credentials.")
         
@@ -44,7 +39,7 @@ class SshClient(FileReader):
     
     def read_file(self, path):
         try:
-            client = self._connect(self.ssh)
+            client = self._connect()
             sftp = client.open_sftp()
             with sftp.file(path, 'r') as file:
                 content = file.read().decode()
@@ -57,7 +52,7 @@ class SshClient(FileReader):
     
     def listdir(self, path):
         try:
-            client = self._connect(self.ssh)
+            client = self._connect()
             sftp = client.open_sftp()
             files = sftp.listdir(path)
             directories = []
@@ -85,7 +80,7 @@ class SshClient(FileReader):
                  is another command
         """
         try:
-            client = self._connect(self.ssh)
+            client = self._connect()
             _, stdout, _ = client.exec_command(command)
             output = stdout.read().decode("ascii")
             client.close()
@@ -96,7 +91,7 @@ class SshClient(FileReader):
 
     def read_file_into_df(self, path, type, sep=",", header=None, colnames=[], on_bad_lines='skip'):
         try:
-            client = self._connect(self.ssh)
+            client = self._connect()
             #Use SFTP to retrieve the file as a Dataframe. sftp is not working for listdir
             sftp = client.open_sftp()
             if type == "vcf":

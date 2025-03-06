@@ -38,11 +38,12 @@ class LocalFileReader(FileReader):
         except Exception as e:
             logging.error(f"Error executing command {command}: {e}")
             return {"output": None, "err": str(e)}
+        
     def read_file_into_df(self, path, type, **kwargs):
         try:
             if type == "vcf":
                 return self.read_vcf_file_into_df(path)
-            return pd.read_csv(path, **kwargs)
+            return self.decode_file_by_type(path, type, **kwargs)
         except Exception as e:
             logging.error(f"Error reading local file into DataFrame {path}: {e}")
             return None

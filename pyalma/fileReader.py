@@ -17,12 +17,10 @@ class FileReader:
         raise NotImplementedError("Subclasses must implement read_file_into_df")
     
     #below two are common functions (i might move them elsewhere later)
-    def decode_file_by_type(content, type, sep=",", header='infer', colnames=[], on_bad_lines='skip'):
+    def decode_file_by_type(content, type, **kwargs):
         """Decodes file content based on type."""
-        if len(colnames)>0:
-            header = 0
         if type in ['csv', 'tsv', 'bed']:
-            return pd.read_csv(StringIO(content.decode('utf-8')), sep=sep, header=header, names=colnames, on_bad_lines=on_bad_lines)
+            return pd.read_csv(StringIO(content.decode('utf-8')), **kwargs)
             #elif type == 'vcf':
             #    return pd.read_csv(StringIO(content), comment='#', delimiter='\t')
         else:

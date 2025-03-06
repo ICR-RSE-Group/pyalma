@@ -25,7 +25,7 @@ def tsv_file():
 
 def test_read_file_into_df_csv(csv_file):
     reader = LocalFileReader()
-    df = reader.read_file_into_df(path=csv_file, type="csv", sep=",", colnames=['col1', 'col2'])
+    df = reader.read_file_into_df(path=csv_file, type="csv", sep=",")
     assert df.shape == (3, 2)  # 3 rows and 2 columns
     assert df.columns.tolist() == ['col1', 'col2']
     assert df.iloc[0, 0] == 1  # First row, first column should be 1
@@ -33,7 +33,7 @@ def test_read_file_into_df_csv(csv_file):
 
 def test_read_file_into_df_tsv(tsv_file):
     reader = LocalFileReader()
-    df = reader.read_file_into_df(path=tsv_file, type="csv", sep="\t", colnames=['col1', 'col2'])
+    df = reader.read_file_into_df(path=tsv_file, type="tsv", sep="\t")
     assert df.shape == (3, 2)  # 3 rows and 2 columns
     assert df.columns.tolist() == ['col1', 'col2']
     assert df.iloc[0, 0] == 1  # First row, first column should be 1

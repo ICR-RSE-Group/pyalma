@@ -87,7 +87,7 @@ class SshClient(FileReader):
             logging.error(f"Error executing SSH command {command}: {e}")
             return {"output":None,"err":str(e)}
 
-    def read_file_into_df(self, path, type, sep=",", header=None, colnames=[], on_bad_lines='skip'):
+    def read_file_into_df(self, path, type, **kwargs):
         try:
             with self._connect(sftp=True) as sftp:                        
                 if type == "vcf":
@@ -99,7 +99,7 @@ class SshClient(FileReader):
                 else:
                     with sftp.open(path, 'r') as remote_file:
                         file_content = remote_file.read()
-                        return self.decode_file_by_type(file_content, type, sep=sep, header=header, colnames=colnames, on_bad_lines=on_bad_lines)
+                        return self.decode_file_by_type(file_content, type, **kwargs)
         except Exception as e:
             logging.error(f"Error reading SSH file into DataFrame {path}: {e}")
             return None

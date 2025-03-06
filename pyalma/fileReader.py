@@ -17,7 +17,7 @@ class FileReader:
         raise NotImplementedError("Subclasses must implement read_file_into_df")
     
     #below two are common functions (i might move them elsewhere later)
-    def decode_file_by_type(content, type, **kwargs):
+    def decode_file_by_type(self, content, type, **kwargs):
         """Decodes file content based on type."""
         if type in ['csv', 'tsv', 'bed']:
             return pd.read_csv(StringIO(content.decode('utf-8')), **kwargs)

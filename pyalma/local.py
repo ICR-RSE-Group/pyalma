@@ -9,10 +9,13 @@ class LocalFileReader(FileReader):
     #def __init__(self, arg):
     #    super().__init__(arg)
 
+    #we might consider merging read_file and read_file_into_df
     def read_file(self, path):
+        type = self.get_file_extension(path)
         try:
             with open(path, 'r') as file:
-                return file.read()
+                content = file.read()
+                return self.decode_file_by_type(content, type)
         except Exception as e:
             logging.error(f"Error reading local file {path}: {e}")
             return None

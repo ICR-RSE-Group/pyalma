@@ -43,11 +43,12 @@ class SshClient(FileReader):
             raise ConnectionError(f"An unexpected error occurred: {e}")
     
     def read_file(self, path):
-        try:            
+        type = self.get_file_extension(path)
+        try:
             with self._connect(sftp=True) as sftp:
                 with sftp.file(path, 'r') as file:
-                    content = file.read().decode()            
-            return content
+                    content = file.decode_file_by_type(content, type)            
+            return content    
         except Exception as e:
             logging.error(f"Error reading SSH file {path}: {e}")
             return None

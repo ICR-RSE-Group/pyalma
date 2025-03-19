@@ -21,8 +21,8 @@ class SshClient(FileReader):
         self.sftp = self.server if sftp is None else sftp.strip()
         self.username = username.strip() if username else None
         self.password = password.strip() if password else None                
-        # super().__init__(arg)# will be useful later        
-                                
+        super().__init__()
+                
     def _connect(self,sftp=False):
         client = paramiko.SSHClient()
         client.load_system_host_keys()
@@ -43,6 +43,24 @@ class SshClient(FileReader):
         except Exception as e:
             raise ConnectionError(f"An unexpected error occurred: {e}")
     
+    # specific function for remote anndata reading
+    # reads the remote file in chunks and write it to a local file, minimizing memory usage during the transfer.​
+    # returns a path to a local file
+    def load_h5ad_file(self, path, local_path):
+        type = self.get_file_extension(path)
+        self.files_to_clean.append(local_path)
+        try:
+            with self._connect(sftp=True) as sftp:
+                with sftp.file(path, 'r') as file:
+                    with open(local_path, 'wb') as local_file:
+                        file.prefetch()
+                        for data in iter(lambda: file.read(32768), b''):
+                            local_file.write(data)                          
+                    return local_path
+        except Exception as e:
+            logging.error(f"Error reading SSH file {path}: {e}")
+            return None 
+          
     def read_file(self, path):
         type = self.get_file_extension(path)
         try:
@@ -139,3 +157,17 @@ class SshClient(FileReader):
             print(f"❌ Error writing to remote file: {e}")
 
             return None   
+    def isfile(self, path):
+        try:
+            with self._connect(sftp=True) as sftp:
+                try:
+                    file_stat = sftp.lstat(path)
+                    if file_stat.st_mode & 0o170000 == 0o100000:
+                        return True
+                    else:
+                        return False
+                except FileNotFoundError:
+                    return False
+        except Exception as e:
+            logging.error(f"Error reading SSH file {path}: {e}")
+            return None

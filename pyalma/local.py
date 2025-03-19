@@ -6,8 +6,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 class LocalFileReader(FileReader):
     """Reads local files and executes local commands."""
-    #def __init__(self, arg):
-    #    super().__init__(arg)
+    def __init__(self):
+        super().__init__()
 
     #we might consider merging read_file and read_file_into_df
     def read_file(self, path):

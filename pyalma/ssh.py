@@ -4,7 +4,8 @@ import logging
 from stat import S_ISDIR, S_ISREG
 import tempfile 
 from .fileReader import FileReader
-
+import pandas as pd
+from io import StringIO
 # Configure logging for better traceability
 logging.basicConfig(level=logging.DEBUG)
 
@@ -43,13 +44,14 @@ class SshClient(FileReader):
             raise ConnectionError(f"An unexpected error occurred: {e}")
     
     def read_file(self, path):
-        try:            
+        type = self.get_file_extension(path)
+        try:
             with self._connect(sftp=True) as sftp:
                 with sftp.file(path, 'r') as file:
-                    content = file.read().decode()            
-            return content
+                    file_content = file.read()
+                    return self.decode_file_by_type(file_content, type)
         except Exception as e:
-            logging.error(f"Error reading SSH file {path}: {e}")
+            logging.error(f"❌ Error reading SSH file {path}: {e}")
             return None
     
     def listdir(self, path):
@@ -67,7 +69,7 @@ class SshClient(FileReader):
                         files.append(entry.filename)            
             return directories, files 
         except Exception as e:
-            logging.error(f"Error listing SSH directory {path}: {e}")
+            logging.error(f"❌ Error listing SSH directory {path}: {e}")
             return []
     
     def run_cmd(self, command):
@@ -84,7 +86,7 @@ class SshClient(FileReader):
                 output = stdout.read().decode("ascii")            
             return {"output":output,"err":None}
         except Exception as e:
-            logging.error(f"Error executing SSH command {command}: {e}")
+            logging.error(f"❌ Error executing SSH command {command}: {e}")
             return {"output":None,"err":str(e)}
 
     def read_file_into_df(self, path, type, **kwargs):
@@ -97,10 +99,43 @@ class SshClient(FileReader):
                         sftp.get(path, local_file)
                         return self.read_vcf_file_into_df(local_file)
                 else:
-                    with sftp.open(path, 'r') as remote_file:
+                    with sftp.open(path, 'rb') as remote_file:
                         file_content = remote_file.read()
                         return self.decode_file_by_type(file_content, type, **kwargs)
         except Exception as e:
-            logging.error(f"Error reading SSH file into DataFrame {path}: {e}")
+            logging.error(f"❌ Error reading SSH file into DataFrame {path}: {e}")
             return None
+    #this is available only for ssh
+    def download_remote_file(self, remote_path, local_path):
+        try:
+            with self._connect(sftp=True) as sftp:
+                sftp.get(remote_path, local_path)
+                print(f"✅ Downloaded: {remote_path} → {local_path}")
+        except Exception as e:
+            logging.error(f"❌ Error copying SSH file to local path:{local_path}: {e}")
+            return None   
+    
+    def write_to_remote_file(self, data, remote_path, file_format="csv"):
+        # checks on data
+        if isinstance(data, pd.DataFrame):
+            if file_format in ["csv", "tsv"]:
+                buffer = StringIO()
+                data.to_csv(buffer, index=False)
+                file_content = buffer.getvalue()
+            else:
+                raise ValueError("Unsupported file format for DataFrame. Use 'csv'.")
+        elif isinstance(data, str):
+            file_content = data  # Assume it's plain text?
+        else:
+            raise TypeError("Data must be a DataFrame or string.")
 
+        try:
+            with self._connect(sftp=True) as sftp:       
+                with sftp.file(remote_path, "w") as remote_file:
+                    remote_file.write(file_content)
+                    print(f"✅ Successfully wrote data to {remote_path}")
+        except Exception as e:
+            logging.error(f"❌ Error writing to remote file: {e}")
+            print(f"❌ Error writing to remote file: {e}")
+
+            return None   

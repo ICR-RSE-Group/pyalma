@@ -1,36 +1,46 @@
 import pysam
 import pandas as pd
-from io import StringIO
 import os
+from io import StringIO
+from .pdfreader import read_pdf_to_dataframe
+
 class FileReader:
     """Base class for reading files."""
     # def __init__(self, arg): #later use
     #     self.arg = arg
-    
-    def read_file(self, path):
+    def read_file(self, path, type=None):
         raise NotImplementedError("Subclasses must implement read_file")
-    
+
     def listdir(self, path):
         raise NotImplementedError("Subclasses must implement listdir")
 
     def read_file_into_df(self, path, type, **kwargs):
         raise NotImplementedError("Subclasses must implement read_file_into_df")
-        
+    
+    def download_remote_file(self, remote_path, local_path):
+        raise NotImplementedError("Subclasses doesnt implement download_remote_file")
+    
+    def write_to_remote_file(self, data, remote_path, file_format="csv"):
+        raise NotImplementedError("Subclasses doesnt write_to_remote_file")
+    
+    def get_file_extension(self, file_path):
+        """Extracts and returns the file extension without the leading dot."""
+        return os.path.splitext(file_path)[1].lstrip('.') 
+
     def decode_file_by_type(self, content, type, **kwargs):
-        """Decodes file content based on type. Accepts either a file path or a string."""
-        # Check if content is a file path or string
+        """Decodes file content based on type. Returns a DataFrame or text depending on the type."""
         is_path = isinstance(content, str) and os.path.isfile(content)
-        if not is_path:
+        if not is_path and type != "pdf":
             content = StringIO(content.decode('utf-8'))
-            
+
         if type in ['csv', 'tsv', 'bed']:
-            # If it's a string (either file content or path), decode it
             return pd.read_csv(content, **kwargs)
-        # elif type == 'vcf':
-        #     return pd.read_csv(content, comment='#', delimiter='\t')
-        
+
+        if type == "pdf":
+            return read_pdf_to_dataframe(content)  # Uses the external module
+
         return content
 
-    def read_vcf_file_into_df(path):
-        vcf_in = pysam.VariantFile(path)
-        return vcf_in
+    def read_vcf_file_into_df(self, path):
+        """Reads a VCF file using pysam and returns a VariantFile object."""
+        return pysam.VariantFile(path)

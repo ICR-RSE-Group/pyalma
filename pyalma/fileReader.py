@@ -16,7 +16,13 @@ class FileReader:
 
     def read_file_into_df(self, path, type, **kwargs):
         raise NotImplementedError("Subclasses must implement read_file_into_df")
-
+    
+    def download_remote_file(self, remote_path, local_path):
+        raise NotImplementedError("Subclasses doesnt implement download_remote_file")
+    
+    def write_to_remote_file(self, data, remote_path, file_format="csv"):
+        raise NotImplementedError("Subclasses doesnt write_to_remote_file")
+    
     def get_file_extension(self, file_path):
         """Extracts and returns the file extension without the leading dot."""
         return os.path.splitext(file_path)[1].lstrip('.') 
@@ -24,7 +30,7 @@ class FileReader:
     def decode_file_by_type(self, content, type, **kwargs):
         """Decodes file content based on type. Returns a DataFrame or text depending on the type."""
         is_path = isinstance(content, str) and os.path.isfile(content)
-        if not is_path and type is not "pdf":
+        if not is_path and type != "pdf":
             content = StringIO(content.decode('utf-8'))
 
         if type in ['csv', 'tsv', 'bed']:

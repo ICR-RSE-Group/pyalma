@@ -6,8 +6,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 class LocalFileReader(FileReader):
     """Reads local files and executes local commands."""
-    #def __init__(self, arg):
-    #    super().__init__(arg)
+    def __init__(self):
+        super().__init__()
 
     #we might consider merging read_file and read_file_into_df
     def read_file(self, path):
@@ -49,4 +49,13 @@ class LocalFileReader(FileReader):
             return self.decode_file_by_type(path, type, **kwargs)
         except Exception as e:
             logging.error(f"Error reading local file into DataFrame {path}: {e}")
+            return None
+    def get_local_file_size(file_path):
+        """
+        Returns the size in bytes.
+        """
+        if os.path.exists(file_path):
+            return os.path.getsize(file_path)
+        else:
+            print("Error: File not found.")
             return None

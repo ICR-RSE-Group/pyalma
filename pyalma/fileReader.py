@@ -3,11 +3,17 @@ import pandas as pd
 import os
 from io import StringIO
 from .pdfreader import read_pdf_to_dataframe
-
+from .anndatareader import read_adata
 class FileReader:
     """Base class for reading files."""
-    # def __init__(self, arg): #later use
-    #     self.arg = arg
+    def __init__(self): 
+         self.files_to_clean = []
+
+    def __del__(self):
+        for path in self.files_to_clean:
+            self.clean_tmp_files(path)
+        print('Resource cleaned.')
+        
     def read_file(self, path, type=None):
         raise NotImplementedError("Subclasses must implement read_file")
 
@@ -38,9 +44,32 @@ class FileReader:
 
         if type == "pdf":
             return read_pdf_to_dataframe(content)  # Uses the external module
-
         return content
 
     def read_vcf_file_into_df(self, path):
         """Reads a VCF file using pysam and returns a VariantFile object."""
         return pysam.VariantFile(path)
+    
+    def read_h5ad(self, path):
+        print("reading h5ad file", path)
+        adata = read_adata(path)
+        ##accessing a subset of the data
+        #subset = adata[:1000, :].X[:]
+        return adata
+    
+    #this is to clean local h5ad files after finish using them
+    def clean_tmp_files(self, path):
+        os.remove(path)
+
+    def load_h5ad_file(self, path, local_path):
+        return path
+
+    def isfile(self, path):
+        if not os.path.exists(path):
+            return False
+        if os.path.isfile(path):
+            return True
+        return False
+
+    def get_file_size(self, path):
+        pass

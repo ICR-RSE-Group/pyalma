@@ -56,3 +56,12 @@ print(result["output"])
 print(result["err"])
 ```
 
+# To read remote anndata files, from within python:
+```
+    remote_path = "/full/remote/path/file.h5ad"
+    local_path = "local_copy.h5ad"
+    ssh = SshClient(server='your_server', username='your_username', password='your_password')
+    ssh.load_h5ad_file(path, local_path)
+    adata = ssh.read_h5ad(local_path)
+    print(adata)
+```

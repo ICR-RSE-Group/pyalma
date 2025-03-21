@@ -70,3 +70,6 @@ class FileReader:
         if os.path.isfile(path):
             return True
         return False
+
+    def get_file_size(self, path):
+        pass

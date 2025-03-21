@@ -171,3 +171,13 @@ class SshClient(FileReader):
         except Exception as e:
             logging.error(f"Error reading SSH file {path}: {e}")
             return None
+        
+    def get_file_size(self, path):
+        try:
+            with self._connect(sftp=True) as sftp:
+                file_size = sftp.stat(path).st_size
+                return file_size
+        except Exception as e:
+            logging.error(f"Error reading SSH file {path}: {e}")
+            return None
+        

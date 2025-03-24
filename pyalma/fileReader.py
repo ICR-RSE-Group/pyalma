@@ -8,12 +8,14 @@ class FileReader:
     """Base class for reading files."""
     def __init__(self): 
          self.files_to_clean = []
+         self.remote = False
 
     def __del__(self):
         for path in self.files_to_clean:
             self.clean_tmp_files(path)
         print('Resource cleaned.')
-        
+    def is_remote(self):
+        return self.remote
     def read_file(self, path, type=None):
         raise NotImplementedError("Subclasses must implement read_file")
 

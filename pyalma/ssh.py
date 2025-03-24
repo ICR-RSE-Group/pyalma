@@ -17,6 +17,7 @@ class SshClient(FileReader):
     """
     #use alma-app since it has an sftp server
     def __init__(self, server="alma.icr.ac.uk", username=None, password=None, sftp="alma-app.icr.ac.uk"):
+        self.remote = True
         self.server = server.strip()
         self.sftp = self.server if sftp is None else sftp.strip()
         self.username = username.strip() if username else None

@@ -58,10 +58,19 @@ print(result["err"])
 
 # To read remote anndata files, from within python:
 ```
-    remote_path = "/full/remote/path/file.h5ad"
-    local_path = "local_copy.h5ad"
-    ssh = SshClient(server='your_server', username='your_username', password='your_password')
-    ssh.load_h5ad_file(path, local_path)
-    adata = ssh.read_h5ad(local_path)
-    print(adata)
+remote_path = "/full/remote/path/file.h5ad"
+local_path = "local_copy.h5ad"
+ssh = SshClient(server='your_server', username='your_username', password='your_password')
+ssh.load_h5ad_file(path, local_path)
+adata = ssh.read_h5ad(local_path)
+print(adata)
+```
+
+# To read pdf files, from within python:
+```
+path = "file.pdf"
+ssh = SshClient(server='your_server', username='your_username', password='your_password')
+# Read PDF into a DataFrame using pyalma
+pdf_df = ssh.read_file_into_df(path,'pdf')
+# returned dataframe contains three columns : "Page", "Content" and "Images"
 ```

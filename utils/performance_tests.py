@@ -45,6 +45,7 @@ if __name__ == "__main__":
             "Read Time (s)": read_perf["time_sec"],
             "Read Memory (MB)": read_perf["memory_MB"]
         })
+        print("In progress results... ",results)
 
     df_results = pd.DataFrame(results)
     print(df_results)

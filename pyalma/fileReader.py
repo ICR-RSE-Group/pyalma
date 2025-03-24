@@ -9,13 +9,20 @@ class FileReader:
     def __init__(self): 
          self.files_to_clean = []
          self.remote = False
+         self.clean_on_destruction = True
 
     def __del__(self):
-        for path in self.files_to_clean:
-            self.clean_tmp_files(path)
-        print('Resource cleaned.')
+        if self.clean_on_destruction:
+            for path in self.files_to_clean:
+                self.clean_tmp_files(path)
+            print('Resource cleaned.')
+
     def is_remote(self):
         return self.remote
+    #this is still under test, thus not moving it yet to constructor
+    def set_clean_on_dest(self):
+        self.clean_on_destruction
+
     def read_file(self, path, type=None):
         raise NotImplementedError("Subclasses must implement read_file")
 

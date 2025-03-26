@@ -59,7 +59,7 @@ class SshClient(FileReader):
                             local_file.write(data)                          
                     return local_path
         except Exception as e:
-            logging.error(f"Error reading SSH file {path}: {e}")
+            logging.error(f"❌ [load_h5ad_file]: Error reading SSH h5ad file {path}: {e}")
             return None 
           
     def read_file(self, path):
@@ -70,7 +70,7 @@ class SshClient(FileReader):
                     file_content = file.read()
                     return self.decode_file_by_type(file_content, type)
         except Exception as e:
-            logging.error(f"❌ Error reading SSH file {path}: {e}")
+            logging.error(f"❌ [read_file]: Error reading SSH file {path}: {e}")
             return None
     
     def listdir(self, path):
@@ -88,7 +88,7 @@ class SshClient(FileReader):
                         files.append(entry.filename)            
             return directories, files 
         except Exception as e:
-            logging.error(f"❌ Error listing SSH directory {path}: {e}")
+            logging.error(f"❌ [listdir]: Error listing SSH directory {path}: {e}")
             return []
     
     def run_cmd(self, command):
@@ -105,7 +105,7 @@ class SshClient(FileReader):
                 output = stdout.read().decode("ascii")            
             return {"output":output,"err":None}
         except Exception as e:
-            logging.error(f"❌ Error executing SSH command {command}: {e}")
+            logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")
             return {"output":None,"err":str(e)}
 
     def read_file_into_df(self, path, type, **kwargs):
@@ -122,7 +122,7 @@ class SshClient(FileReader):
                         file_content = remote_file.read()
                         return self.decode_file_by_type(file_content, type, **kwargs)
         except Exception as e:
-            logging.error(f"❌ Error reading SSH file into DataFrame {path}: {e}")
+            logging.error(f"❌ [read_file_into_df]: Error reading SSH file into DataFrame {path}: {e}")
             return None
     #this is available only for ssh
     def download_remote_file(self, remote_path, local_path):
@@ -131,7 +131,7 @@ class SshClient(FileReader):
                 sftp.get(remote_path, local_path)
                 print(f"✅ Downloaded: {remote_path} → {local_path}")
         except Exception as e:
-            logging.error(f"❌ Error copying SSH file to local path:{local_path}: {e}")
+            logging.error(f"❌ [download_remote_file]: Error copying SSH file to local path:{local_path}: {e}")
             return None   
     
     def write_to_remote_file(self, data, remote_path, file_format="csv"):
@@ -154,7 +154,7 @@ class SshClient(FileReader):
                     remote_file.write(file_content)
                     print(f"✅ Successfully wrote data to {remote_path}")
         except Exception as e:
-            logging.error(f"❌ Error writing to remote file: {e}")
+            logging.error(f"❌ [write_to_remote_file]: Error writing to remote file: {e}")
             print(f"❌ Error writing to remote file: {e}")
 
             return None   
@@ -170,8 +170,8 @@ class SshClient(FileReader):
                 except FileNotFoundError:
                     return False
         except Exception as e:
-            logging.error(f"Error reading SSH file {path}: {e}")
-            return None
+            logging.error(f"❌ [isfile]: Error checking SSH file type {path}: {e}")
+            raise #return None
         
     def get_file_size(self, path):
         try:
@@ -179,6 +179,6 @@ class SshClient(FileReader):
                 file_size = sftp.stat(path).st_size
                 return file_size
         except Exception as e:
-            logging.error(f"Error reading SSH file {path}: {e}")
+            logging.error(f"❌ [get_file_size]: Error reading SSH file {path}: {e}")
             return None
         

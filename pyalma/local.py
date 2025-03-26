@@ -17,7 +17,7 @@ class LocalFileReader(FileReader):
                 content = file.read()
                 return self.decode_file_by_type(content, type)
         except Exception as e:
-            logging.error(f"Error reading local file {path}: {e}")
+            logging.error(f"❌ [read_file]: Error reading local file {path}: {e}")
             return None
     
     def listdir(self, path):
@@ -30,7 +30,7 @@ class LocalFileReader(FileReader):
                 print(dirs)
             return dirs, files
         except Exception as e:
-            logging.error(f"Error listing directory {path}: {e}")
+            logging.error(f"❌ [listdir]: Error listing directory {path}: {e}")
             return []
     
     def run_cmd(self, command):
@@ -39,7 +39,7 @@ class LocalFileReader(FileReader):
             print(result)
             return {"output": result, "err": None}
         except Exception as e:
-            logging.error(f"Error executing command {command}: {e}")
+            logging.error(f"❌ [run_cmd]: Error executing command {command}: {e}")
             return {"output": None, "err": str(e)}
         
     def read_file_into_df(self, path, type, **kwargs):
@@ -48,7 +48,7 @@ class LocalFileReader(FileReader):
                 return self.read_vcf_file_into_df(path)
             return self.decode_file_by_type(path, type, **kwargs)
         except Exception as e:
-            logging.error(f"Error reading local file into DataFrame {path}: {e}")
+            logging.error(f"❌ [read_file_into_df]: Error reading local file into DataFrame {path}: {e}")
             return None
     def get_local_file_size(file_path):
         """
@@ -57,5 +57,5 @@ class LocalFileReader(FileReader):
         if os.path.exists(file_path):
             return os.path.getsize(file_path)
         else:
-            print("Error: File not found.")
+            logging.error("❌ [get_local_file_size]: Error File not found.")
             return None

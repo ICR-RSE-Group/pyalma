@@ -53,6 +53,11 @@ class SshClient(FileReader):
         try:
             with self._connect(sftp=True) as sftp:
                 with sftp.file(path, 'r') as file:
+                    try:
+                        local_file = open(local_path, 'wb')
+                        local_file.close()
+                    except Exception as e:
+                        logging.error(f"❌ [load_h5ad_file]: Error creating local h5ad file {local_path}: {e}")
                     with open(local_path, 'wb') as local_file:
                         file.prefetch()
                         for data in iter(lambda: file.read(32768), b''):
@@ -60,7 +65,7 @@ class SshClient(FileReader):
                     return local_path
         except Exception as e:
             logging.error(f"❌ [load_h5ad_file]: Error reading SSH h5ad file {path}: {e}")
-            return None 
+            raise 
           
     def read_file(self, path):
         type = self.get_file_extension(path)

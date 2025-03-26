@@ -20,8 +20,8 @@ class FileReader:
     def is_remote(self):
         return self.remote
     #this is still under test, thus not moving it yet to constructor
-    def set_clean_on_dest(self):
-        self.clean_on_destruction
+    def set_clean_on_dest(self, value):
+        self.clean_on_destruction = value
 
     def read_file(self, path, type=None):
         raise NotImplementedError("Subclasses must implement read_file")

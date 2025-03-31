@@ -6,6 +6,8 @@ import tempfile
 from .fileReader import FileReader
 import pandas as pd
 from io import StringIO
+import yaml
+import re
 # Configure logging for better traceability
 logging.basicConfig(level=logging.DEBUG)
 
@@ -22,8 +24,17 @@ class SshClient(FileReader):
         self.server = server.strip()
         self.sftp = self.server if sftp is None else sftp.strip()
         self.username = username.strip() if username else None
-        self.password = password.strip() if password else None                
-                
+        self.password = password.strip() if password else None
+        #we can make it an arg 
+        self.filter_file = os.path.join(os.path.dirname(__file__), "config", "messages.yaml")
+        self.filtered_patterns = self._load_filtered_patterns()
+    def _load_filtered_patterns(self):
+        try:
+            with open(self.filter_file, "r") as file:
+                return yaml.safe_load(file) or []
+        except Exception as e:
+            logging.error(f"❌ [_load_filtered_patterns]: Error loading filter file {self.filter_file}: {e}")
+            return []
     def _connect(self,sftp=False):
         client = paramiko.SSHClient()
         client.load_system_host_keys()
@@ -102,8 +113,12 @@ class SshClient(FileReader):
         try:
             with self._connect() as client:
                 _, stdout, _ = client.exec_command(command)
-                output = stdout.read().decode("ascii")            
-            return {"output":output,"err":None}
+                output = stdout.read().decode("ascii")
+                filtered_output = "\n".join(
+                    line for line in output.split("\n") 
+                    if not any(line.startswith(_filter) for _filter in self.filtered_patterns)
+                )
+            return {"output":filtered_output,"err":None}
         except Exception as e:
             logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")
             return {"output":None,"err":str(e)}

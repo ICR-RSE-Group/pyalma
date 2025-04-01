@@ -1,1 +1,2 @@
-"SLURM: Your account,"
+filters:
+  - "SLURM: Your account,"

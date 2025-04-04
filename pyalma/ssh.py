@@ -54,15 +54,21 @@ class SshClient(FileReader):
         except Exception as e:
             logging.error(f"❌ [_load_filtered_patterns]: Error loading filter file {self.filter_file}: {e}")
             return []
-
+        
+    def filter_output(self, output):
+        filtered_output = ""
+        if output != "":
+            filters = self.filtered_patterns["filters"] 
+            filtered_output = "\n".join(
+                line for line in output.splitlines() if not any(line.startswith(f) for f in filters)
+            )
+        return filtered_output
+    
     def run_cmd(self, command):
         try:
-            stdin, stdout, stderr = self.ssh_client.exec_command(command)
+            _, stdout, _ = self.ssh_client.exec_command(command)
             output = stdout.read().decode("ascii")
-            filtered_output = "\n".join(
-                line for line in output.split("\n") 
-                if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
-            )
+            filtered_output = self.filter_output(output)
             return {"output": filtered_output, "err": None}
         except Exception as e:
             logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")

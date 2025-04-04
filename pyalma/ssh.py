@@ -62,16 +62,16 @@ class SshClient(FileReader):
             print(f"✅: {stdin}, {stdout}, {stderr}" )
             output = stdout.read().decode("ascii")
             print(f"✅: {output}")
-            filtered_output = ""
-            if output != "": 
-                filtered_output = "\n".join(
-                    line for line in output.replace("\r", "").split("\n") 
-                    if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
-                )
-            return {"output": filtered_output, "err": None}
-        except Exception as e:
-            logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")
-            return {"output": None, "err": str(e)}
+            # filtered_output = ""
+            # if output != "": 
+            #     filtered_output = "\n".join(
+            #         line for line in output.replace("\r", "").split("\n") 
+            #         if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
+            #     )
+            return {"output": output, "err": None}
+        # except Exception as e:
+        #     logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")
+        #     return {"output": None, "err": str(e)}
 
     # specific function for remote anndata reading
     # reads the remote file in chunks and write it to a local file, minimizing memory usage during the transfer.​

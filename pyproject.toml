@@ -23,7 +23,7 @@ dependencies = [
 packages = ["pyalma"]  
 
 [tool.setuptools.package-data]
-pyalma = ["*.py"]
+pyalma = ["*.py", "config/*.yaml"]
 
 [project.scripts]
 pyalma-cli = 'pyalma.cli:main'

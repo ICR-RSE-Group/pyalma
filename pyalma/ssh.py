@@ -57,18 +57,18 @@ class SshClient(FileReader):
             return []
 
     def run_cmd(self, command, as_list=False):
-        try:
-            stdin, stdout, stderr = self.ssh_client.exec_command(command)
-            print(f"✅: {stdin}, {stdout}, {stderr}" )
-            output = stdout.read().decode("ascii")
-            print(f"✅: {output}")
-            # filtered_output = ""
-            # if output != "": 
-            #     filtered_output = "\n".join(
-            #         line for line in output.replace("\r", "").split("\n") 
-            #         if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
-            #     )
-            return {"output": output, "err": None}
+        # try:
+        stdin, stdout, stderr = self.ssh_client.exec_command(command)
+        print(f"✅: {stdin}, {stdout}, {stderr}" )
+        output = stdout.read().decode("ascii")
+        print(f"✅: {output}")
+        # filtered_output = ""
+        # if output != "": 
+        #     filtered_output = "\n".join(
+        #         line for line in output.replace("\r", "").split("\n") 
+        #         if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
+        #     )
+        return {"output": output, "err": None}
         # except Exception as e:
         #     logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")
         #     return {"output": None, "err": str(e)}

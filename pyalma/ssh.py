@@ -7,6 +7,7 @@ from .fileReader import FileReader
 import pandas as pd
 from io import StringIO
 import yaml
+import re
 
 # Configure logging for better traceability
 logging.basicConfig(level=logging.DEBUG)
@@ -55,11 +56,12 @@ class SshClient(FileReader):
             logging.error(f"❌ [_load_filtered_patterns]: Error loading filter file {self.filter_file}: {e}")
             return []
 
-    def run_cmd(self, command):
+    def run_cmd(self, command, as_list=False):
         try:
             stdin, stdout, stderr = self.ssh_client.exec_command(command)
             print(f"✅: {stdin}, {stdout}, {stderr}" )
-            output = stdout.read().decode("ascii")
+            # output = stdout.read().decode("ascii")
+            output = stdout.read().decode("utf-8", errors="ignore")
             print(f"✅: {output}")
             filtered_output = ""
             if output != "": 

@@ -61,10 +61,6 @@ class SshClient(FileReader):
              stdin, stdout, stderr = self.ssh_client.exec_command(command)
              print(f"✅: {stdin}, {stdout}, {stderr}" )
              output = stdout.read().decode("ascii")
-             filtered_output = "\n".join(
-                 line for line in output.split("\n") 
-                 if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
-             )
              print(f"✅: {output}")
              filtered_output = ""
              if output != "": 

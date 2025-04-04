@@ -63,10 +63,10 @@ class SshClient(FileReader):
             output = stdout.read().decode("ascii")
             print(f"✅: {output}")
             filtered_output = ""
-            lines = re.split(r"\r?\n", output)
             if output != "":
+                lines = re.split(r"\r?\n", output)
                 lines = [
-                    line for line in lines 
+                    line for line in lines
                     if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
                 ]
                 filtered_output = lines if as_list else "\n".join(lines)

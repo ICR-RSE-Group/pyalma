@@ -63,13 +63,11 @@ class SshClient(FileReader):
             output = stdout.read().decode("ascii")
             print(f"✅: {output}")
             filtered_output = ""
-            if output != "":
-                lines = re.split(r"\r?\n", output)
-                lines = [
-                    line for line in lines
+            if output != "": 
+                filtered_output = "\n".join(
+                    line for line in output.replace("\r", "").split("\n") 
                     if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
-                ]
-                filtered_output = lines if as_list else "\n".join(lines)
+                )
             return {"output": filtered_output, "err": None}
         except Exception as e:
             logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")

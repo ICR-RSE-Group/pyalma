@@ -69,6 +69,7 @@ class SshClient(FileReader):
         #         line for line in output.replace("\r", "").split("\n") 
         #         if not any(line.startswith(_filter) for _filter in self.filtered_patterns["filters"])
         #     )
+        print("✅✅✅✅✅✅✅✅✅✅✅YOOOOOOO")
         return {"output": output, "err": None}
         # except Exception as e:
         #     logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")

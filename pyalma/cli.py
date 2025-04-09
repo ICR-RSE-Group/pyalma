@@ -1,8 +1,13 @@
 import argparse
 from .local import LocalFileReader
 from .ssh import SshClient
+from importlib.metadata import version, PackageNotFoundError
 
 def main():
+    try:
+        pkg_version = version("pyalma")
+    except PackageNotFoundError:
+        pkg_version = "unknown"
     parser = argparse.ArgumentParser(description="File Reader")
     parser.add_argument("--local", help="Path to local file", type=str)
     parser.add_argument("--ssh", help="Path to remote file", type=str)
@@ -10,7 +15,8 @@ def main():
     parser.add_argument("--user", help="SSH Username", type=str)
     parser.add_argument("--password", help="SSH Password", type=str)
     parser.add_argument("--cmd", help="Command to execute", type=str)
-    
+    parser.add_argument("--version", action="version", version=f"%(prog)s {pkg_version}")
+
     args = parser.parse_args()
     
     if args.local:

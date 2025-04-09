@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "twine", "build"]
+requires = ["setuptools>=42", "wheel", "twine", "build", "setuptools_scm[toml]>=8.2.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyalma"
-version = "0.1.0"
 description = "A simple SSH connection package"
 authors = [{name = "RSE team", email = "mira.sarkis@icr.ac.uk"}]
+dynamic = ["version"]
 
 dependencies = [
     "pandas==2.2.3",
@@ -19,11 +19,15 @@ dependencies = [
     "PyMuPDF>=1.25.3"
 ]
 
-[tool.setuptools]
-packages = ["pyalma"]  
+[tool.setuptools.packages.find]
+where = ["."]
 
 [tool.setuptools.package-data]
 pyalma = ["*.py", "config/*.yaml"]
 
 [project.scripts]
 pyalma-cli = 'pyalma.cli:main'
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "node-and-date"

@@ -27,7 +27,21 @@ class SshClient(FileReader):
         self.filter_file = os.path.join(os.path.dirname(__file__), "config", "messages.yaml")
         self.filtered_patterns = self._load_filtered_patterns()
         self._connect()
+        self.groups = self.retrieve_user_groups()
 
+    # to be used by lib users
+    def get_user_groups(self):
+        return self.groups
+    
+    def retrieve_user_groups(self):
+        cmd_usr = "sacctmgr list association user=$USER format=Account -P | tail -n +2"
+        results = self.run_cmd(cmd_usr)
+
+        if results["err"] is not None:
+            raise Exception(f"❌ [retrieve_user_groups]: Couldn't retrieve user groups")
+
+        return results["output"].strip().split("\n")
+        
     def _connect(self):
         # should be called only at initialisation
         self.ssh_client = paramiko.SSHClient()
@@ -38,6 +52,7 @@ class SshClient(FileReader):
             #one single connection 
             self.ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
             self.sftp_client = self.ssh_client.open_sftp()
+
         except paramiko.AuthenticationException:
             raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}. Please check your credentials.")
         

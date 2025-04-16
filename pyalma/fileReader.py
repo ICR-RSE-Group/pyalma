@@ -2,6 +2,7 @@ import pysam
 import pandas as pd
 import os
 from io import StringIO
+import yaml
 from .pdfreader import read_pdf_to_dataframe
 from .anndatareader import read_adata
 class FileReader:
@@ -82,3 +83,10 @@ class FileReader:
 
     def get_file_size(self, path):
         pass
+
+    def _load_yaml_file(custom_yaml):
+        if not custom_yaml:
+            print("No yaml was provided")
+            return {}#empty dict
+        with open(custom_yaml, "r") as file:
+            return yaml.safe_load(file)

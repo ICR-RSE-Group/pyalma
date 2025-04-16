@@ -12,7 +12,7 @@ import yaml
 logging.basicConfig(level=logging.DEBUG)
 
 class SshClient(FileReader):
-    def __init__(self, server="alma.icr.ac.uk", username=None, password=None, sftp="alma-app.icr.ac.uk"):
+    def __init__(self, server="alma.icr.ac.uk", username=None, password=None, sftp="alma-app.icr.ac.uk", custom_yaml=None):
         """Initializes the SSH connection instance.
             :param username: SSH username for alma
             :param password: SSH password for alma
@@ -26,8 +26,24 @@ class SshClient(FileReader):
         self.password = password.strip() if password else None
         self.filter_file = os.path.join(os.path.dirname(__file__), "config", "messages.yaml")
         self.filtered_patterns = self._load_filtered_patterns()
+        self.config = self._load_yaml_file(custom_yaml)
         self._connect()
         self.groups = self.retrieve_user_groups()
+
+    def get_user_paths(self, group, locations=["scratch", "rds"]):
+        if not self.config  or "group_paths" not in self.config:
+            raise ValueError("Missing config: self.config must be set before calling get_user_paths.")
+
+        group_config = self.config["group_paths"].get(group, self.config["group_paths"].get("default"))
+
+        paths = {}
+        for loc in locations:
+            if loc in group_config:
+                formatted_path = group_config[loc].format(username=self.username, group=group)
+                paths[loc] = formatted_path
+                print(f"{loc}: {formatted_path}")
+
+        return paths
 
     # to be used by lib users
     def get_user_groups(self):
@@ -41,7 +57,7 @@ class SshClient(FileReader):
             raise Exception(f"❌ [retrieve_user_groups]: Couldn't retrieve user groups")
 
         return results["output"].strip().split("\n")
-        
+
     def _connect(self):
         # should be called only at initialisation
         self.ssh_client = paramiko.SSHClient()

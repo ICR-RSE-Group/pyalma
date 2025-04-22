@@ -8,15 +8,27 @@ import pandas as pd
 from io import StringIO
 import yaml
 
-# Configure logging for better traceability
+# Configure logging for debugging and error tracing
 logging.basicConfig(level=logging.DEBUG)
 
 class SshClient(FileReader):
+    """
+    SSH-based file reader that extends FileReader to handle file operations over SSH/SFTP.
+    Enables reading, writing, listing, and transferring files on a remote server securely.
+    """
+
     def __init__(self, server="alma.icr.ac.uk", username=None, password=None, sftp="alma-app.icr.ac.uk"):
-        """Initializes the SSH connection instance.
-            :param username: SSH username for alma
-            :param password: SSH password for alma
-            :param server: The remote server address (default is 'alma.icr.ac.uk')
+        """
+        Initialize SSH and SFTP connection parameters.
+
+        :param server: Main SSH server address.
+        :type server: str
+        :param username: SSH username.
+        :type username: str
+        :param password: SSH password.
+        :type password: str
+        :param sftp: SFTP host (defaults to `server` if not specified).
+        :type sftp: str
         """
         super().__init__()
         self.remote = True
@@ -29,68 +41,105 @@ class SshClient(FileReader):
         self._connect()
 
     def _connect(self):
-        # should be called only at initialisation
+        """
+        Establish SSH and SFTP connections using Paramiko.
+
+        :raises ConnectionError: If authentication or connection fails.
+        """
         self.ssh_client = paramiko.SSHClient()
         self.ssh_client.load_system_host_keys()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.sftp_client = None
+
         try:
-            #one single connection 
             self.ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
             self.sftp_client = self.ssh_client.open_sftp()
         except paramiko.AuthenticationException:
-            raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}. Please check your credentials.")
-        
+            raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}.")
         except paramiko.SSHException as e:
-            raise ConnectionError(f"❌ [_connect]: SSH connection error: {e}. Please check the server or the SSH configuration.")
-        
+            raise ConnectionError(f"❌ [_connect]: SSH connection error: {e}")
         except Exception as e:
-            raise ConnectionError(f"❌ [_connect]: An unexpected error occurred: {e}")
+            raise ConnectionError(f"❌ [_connect]: Unexpected SSH connection error: {e}")
 
     def _load_filtered_patterns(self):
+        """
+        Load SSH output filter patterns from YAML configuration.
+
+        :return: Filter configuration dictionary.
+        :rtype: dict
+        """
         try:
             with open(self.filter_file, "r") as file:
                 return yaml.safe_load(file) or []
         except Exception as e:
             logging.error(f"❌ [_load_filtered_patterns]: Error loading filter file {self.filter_file}: {e}")
             return []
-        
+
     def filter_output(self, output):
-        filtered_output = ""
+        """
+        Filter SSH command output using predefined patterns.
+
+        :param output: Raw output from SSH command.
+        :type output: str
+        :return: Filtered output string.
+        :rtype: str
+        """
         if output != "":
-            filters = self.filtered_patterns["filters"] 
-            filtered_output = "\n".join(
+            filters = self.filtered_patterns.get("filters", [])
+            return "\n".join(
                 line for line in output.splitlines() if not any(line.startswith(f) for f in filters)
             )
-        return filtered_output
-    
+        return ""
+
     def run_cmd(self, command):
+        """
+        Run a command on the remote server via SSH.
+
+        :param command: Command to execute.
+        :type command: str
+        :return: Dictionary with 'output' and 'err' keys.
+        :rtype: dict
+        """
         try:
             _, stdout, _ = self.ssh_client.exec_command(command)
             output = stdout.read().decode("ascii")
-            filtered_output = self.filter_output(output)
-            return {"output": filtered_output, "err": None}
+            return {"output": self.filter_output(output), "err": None}
         except Exception as e:
             logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")
             return {"output": None, "err": str(e)}
 
-    # specific function for remote anndata reading
-    # reads the remote file in chunks and write it to a local file, minimizing memory usage during the transfer.​
-    # returns a path to a local file
     def load_h5ad_file(self, path, local_path):
+        """
+        Download an h5ad file from the remote server in chunks.
+
+        :param path: Remote file path.
+        :type path: str
+        :param local_path: Destination on local machine.
+        :type local_path: str
+        :return: Local path of the saved file or None if failed.
+        :rtype: str | None
+        """
         self.files_to_clean.append(local_path)
         try:
             with self.sftp_client.open(path, 'r') as file:
                 with open(local_path, 'wb') as local_file:
                     file.prefetch()
                     for data in iter(lambda: file.read(32768), b''):
-                        local_file.write(data)                          
+                        local_file.write(data)
             return local_path
         except Exception as e:
             logging.error(f"❌ [load_h5ad_file]: Error reading SSH h5ad file {path}: {e}")
             return None
 
     def read_file(self, path):
+        """
+        Read contents of a remote file.
+
+        :param path: Remote file path.
+        :type path: str
+        :return: Decoded content (DataFrame, string, etc.).
+        :rtype: Any
+        """
         try:
             with self.sftp_client.file(path, 'r') as file:
                 file_content = file.read()
@@ -98,11 +147,22 @@ class SshClient(FileReader):
         except Exception as e:
             logging.error(f"❌ [read_file]: Error reading SSH file {path}: {e}")
             return None
+
     def read_file_into_df(self, path, type, **kwargs):
+        """
+        Read a remote file and convert it into a DataFrame.
+
+        :param path: Path to the remote file.
+        :type path: str
+        :param type: File type (e.g., 'csv', 'vcf').
+        :type type: str
+        :param kwargs: Additional keyword arguments for parsing.
+        :return: Parsed data as a DataFrame or None.
+        :rtype: pd.DataFrame | None
+        """
         try:
             if type == "vcf":
                 with tempfile.TemporaryDirectory() as tmpdirname:
-                    print('created temporary directory', tmpdirname)
                     local_file = os.path.join(tmpdirname, "tmp.vcf")
                     self.sftp_client.get(path, local_file)
                     return self.read_vcf_file_into_df(local_file)
@@ -115,39 +175,66 @@ class SshClient(FileReader):
             return None
 
     def listdir(self, path):
+        """
+        List files and directories at a remote path.
+
+        :param path: Remote directory path.
+        :type path: str
+        :return: Tuple of (directories, files).
+        :rtype: tuple[list[str], list[str]]
+        """
         try:
             files, directories = [], []
             for entry in self.sftp_client.listdir_attr(path):
-                mode = entry.st_mode
-                if S_ISDIR(mode):
+                if S_ISDIR(entry.st_mode):
                     directories.append(entry.filename)
-                elif S_ISREG(mode):
-                    files.append(entry.filename)            
+                elif S_ISREG(entry.st_mode):
+                    files.append(entry.filename)
             return directories, files
         except Exception as e:
             logging.error(f"❌ [listdir]: Error listing SSH directory {path}: {e}")
             return [], []
 
     def download_remote_file(self, remote_path, local_path):
+        """
+        Download a remote file via SFTP.
+
+        :param remote_path: Path on the remote server.
+        :type remote_path: str
+        :param local_path: Local destination path.
+        :type local_path: str
+        """
         try:
             self.sftp_client.get(remote_path, local_path)
             print(f"✅ Downloaded: {remote_path} → {local_path}")
         except Exception as e:
-            logging.error(f"❌ [download_remote_file]: Error copying SSH file to local path:{local_path}: {e}")
+            logging.error(f"❌ [download_remote_file]: Error copying SSH file to {local_path}: {e}")
             return None
 
     def write_to_remote_file(self, data, remote_path, file_format="csv"):
+        """
+        Write data (string or DataFrame) to a file on the remote server.
+
+        :param data: The data to write.
+        :type data: pd.DataFrame | str
+        :param remote_path: Destination path on the remote server.
+        :type remote_path: str
+        :param file_format: Format to use ('csv' supported for DataFrames).
+        :type file_format: str
+        :raises ValueError: If unsupported DataFrame format is specified.
+        :raises TypeError: If data is not string or DataFrame.
+        """
         if isinstance(data, pd.DataFrame):
             if file_format in ["csv", "tsv"]:
                 buffer = StringIO()
                 data.to_csv(buffer, index=False)
                 file_content = buffer.getvalue()
             else:
-                raise ValueError("Unsupported file format for DataFrame. Use 'csv'.")
+                raise ValueError("❌ [write_to_remote_file]: Unsupported file format for DataFrame. Use 'csv'.")
         elif isinstance(data, str):
             file_content = data
         else:
-            raise TypeError("Data must be a DataFrame or string.")
+            raise TypeError("❌ [write_to_remote_file]: Data must be a DataFrame or string.")
 
         try:
             with self.sftp_client.open(remote_path, "w") as remote_file:
@@ -158,6 +245,14 @@ class SshClient(FileReader):
             return None
 
     def isfile(self, path):
+        """
+        Check whether the given remote path points to a file.
+
+        :param path: Remote path.
+        :type path: str
+        :return: True if path is a file.
+        :rtype: bool
+        """
         try:
             file_stat = self.sftp_client.lstat(path)
             return file_stat.st_mode & 0o170000 == 0o100000
@@ -166,15 +261,25 @@ class SshClient(FileReader):
             raise
 
     def get_file_size(self, path):
+        """
+        Get the size of a file on the remote server.
+
+        :param path: Remote file path.
+        :type path: str
+        :return: Size in bytes, or None if error.
+        :rtype: int | None
+        """
         try:
             return self.sftp_client.stat(path).st_size
         except Exception as e:
-            logging.error(f"❌ [get_file_size]: Error reading SSH file {path}: {e}")
+            logging.error(f"❌ [get_file_size]: Error reading SSH file size for {path}: {e}")
             return None
 
     def __del__(self):
-        super().__del__()#make sure to call parent destructor
-        # Ensure we close both SSH and SFTP connections when the object is destroyed
+        """
+        Destructor that closes SSH and SFTP connections and cleans up resources.
+        """
+        super().__del__()
         try:
             if self.sftp_client:
                 self.sftp_client.close()

@@ -1,0 +1,51 @@
+name: apidocs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Generate & Deploy API Docs
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install docutils pydoctor
+
+    - name: Generate API documentation with PyDoctor
+      run: |
+        pydoctor \
+          --make-html \
+          --html-output=./apidocs \
+          --project-name="pyalma API" \
+          --project-url="https://github.com/${{ github.repository }}" \
+          --project-base-dir=pyalma \
+          pyalma
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./apidocs
+        publish_branch: gh-pages
+        commit_message: "Deploy API documentation from ${{ github.ref_name }}"

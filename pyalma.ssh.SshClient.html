@@ -543,7 +543,7 @@
         </div>
 
         <div class="moduleDocstring">
-          <div><p class="undocumented">Undocumented</p></div>
+          <div><p>SSH-based file reader that extends FileReader to handle file operations over SSH/SFTP. Enables reading, writing, listing, and transferring files on a remote server securely.</p></div>
         </div>
 
         <div id="splitTables">
@@ -554,62 +554,62 @@
     
     <td>Method</td>
     <td><code><a href="#__del__" class="internal-link" title="pyalma.ssh.SshClient.__del__">__del__</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Destructor that closes SSH and SFTP connections and cleans up resources.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#__init__" class="internal-link" title="pyalma.ssh.SshClient.__init__">__init__</a></code></td>
-    <td>Initializes the SSH connection instance. :param username: SSH username for alma :param password: SSH password for alma :param server: The remote server address (default is 'alma.icr.ac.uk')</td>
+    <td>Initialize SSH and SFTP connection parameters.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#download_remote_file" class="internal-link" title="pyalma.ssh.SshClient.download_remote_file">download<wbr></wbr>_remote<wbr></wbr>_file</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Download a remote file via SFTP.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#filter_output" class="internal-link" title="pyalma.ssh.SshClient.filter_output">filter<wbr></wbr>_output</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Filter SSH command output using predefined patterns.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#get_file_size" class="internal-link" title="pyalma.ssh.SshClient.get_file_size">get<wbr></wbr>_file<wbr></wbr>_size</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Get the size of a file on the remote server.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#isfile" class="internal-link" title="pyalma.ssh.SshClient.isfile">isfile</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Check whether the given remote path points to a file.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#listdir" class="internal-link" title="pyalma.ssh.SshClient.listdir">listdir</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>List files and directories at a remote path.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#load_h5ad_file" class="internal-link" title="pyalma.ssh.SshClient.load_h5ad_file">load<wbr></wbr>_h5ad<wbr></wbr>_file</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Download an h5ad file from the remote server in chunks.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#read_file" class="internal-link" title="pyalma.ssh.SshClient.read_file">read<wbr></wbr>_file</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Read contents of a remote file.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#read_file_into_df" class="internal-link" title="pyalma.ssh.SshClient.read_file_into_df">read<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Read a remote file and convert it into a DataFrame.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#run_cmd" class="internal-link" title="pyalma.ssh.SshClient.run_cmd">run<wbr></wbr>_cmd</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Run a command on the remote server via SSH.</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#write_to_remote_file" class="internal-link" title="pyalma.ssh.SshClient.write_to_remote_file">write<wbr></wbr>_to<wbr></wbr>_remote<wbr></wbr>_file</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Write data (string or DataFrame) to a file on the remote server.</td>
   </tr><tr class="instancevariable">
     
     <td>Instance Variable</td>
@@ -659,12 +659,12 @@
     
     <td>Method</td>
     <td><code><a href="#_connect" class="internal-link" title="pyalma.ssh.SshClient._connect">_connect</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Establish SSH and SFTP connections using Paramiko.</td>
   </tr><tr class="method private">
     
     <td>Method</td>
     <td><code><a href="#_load_filtered_patterns" class="internal-link" title="pyalma.ssh.SshClient._load_filtered_patterns">_load<wbr></wbr>_filtered<wbr></wbr>_patterns</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Load SSH output filter patterns from YAML configuration.</td>
   </tr>
 </table>
           
@@ -678,37 +678,37 @@
     
     <td>Method</td>
     <td><code><a href="pyalma.fileReader.FileReader.html#clean_tmp_files" class="internal-link" title="pyalma.fileReader.FileReader.clean_tmp_files">clean<wbr></wbr>_tmp<wbr></wbr>_files</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Deletes a temporary file.</td>
   </tr><tr class="basemethod">
     
     <td>Method</td>
     <td><code><a href="pyalma.fileReader.FileReader.html#decode_file_by_type" class="internal-link" title="pyalma.fileReader.FileReader.decode_file_by_type">decode<wbr></wbr>_file<wbr></wbr>_by<wbr></wbr>_type</a></code></td>
-    <td>Decodes file content based on type. Returns a DataFrame or text depending on the type.</td>
+    <td>Decodes content based on file type, returning a DataFrame or raw text.</td>
   </tr><tr class="basemethod">
     
     <td>Method</td>
     <td><code><a href="pyalma.fileReader.FileReader.html#get_file_extension" class="internal-link" title="pyalma.fileReader.FileReader.get_file_extension">get<wbr></wbr>_file<wbr></wbr>_extension</a></code></td>
-    <td>Extracts and returns the file extension without the leading dot.</td>
+    <td>Extracts the file extension from a given path.</td>
   </tr><tr class="basemethod">
     
     <td>Method</td>
     <td><code><a href="pyalma.fileReader.FileReader.html#is_remote" class="internal-link" title="pyalma.fileReader.FileReader.is_remote">is<wbr></wbr>_remote</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Checks if the reader is set to remote mode.</td>
   </tr><tr class="basemethod">
     
     <td>Method</td>
     <td><code><a href="pyalma.fileReader.FileReader.html#read_h5ad" class="internal-link" title="pyalma.fileReader.FileReader.read_h5ad">read<wbr></wbr>_h5ad</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Reads an H5AD file using `anndatareader`.</td>
   </tr><tr class="basemethod">
     
     <td>Method</td>
     <td><code><a href="pyalma.fileReader.FileReader.html#read_vcf_file_into_df" class="internal-link" title="pyalma.fileReader.FileReader.read_vcf_file_into_df">read<wbr></wbr>_vcf<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</a></code></td>
-    <td>Reads a VCF file using pysam and returns a VariantFile object.</td>
+    <td>Reads a VCF (Variant Call Format) file using `pysam`.</td>
   </tr><tr class="basemethod">
     
     <td>Method</td>
     <td><code><a href="pyalma.fileReader.FileReader.html#set_clean_on_dest" class="internal-link" title="pyalma.fileReader.FileReader.set_clean_on_dest">set<wbr></wbr>_clean<wbr></wbr>_on<wbr></wbr>_dest</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td>Sets the `clean_on_destruction` flag.</td>
   </tr><tr class="baseinstancevariable">
     
     <td>Instance Variable</td>
@@ -749,7 +749,7 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#__del__" class="internal-link">pyalma.fileReader.FileReader.__del__</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Destructor that closes SSH and SFTP connections and cleans up resources.</p></div>
   </div>
 </div><div class="basemethod">
   
@@ -773,7 +773,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#__init__" class="internal-link">pyalma.fileReader.FileReader.__init__</a></code></div>
-    <div><p>Initializes the SSH connection instance. :param username: SSH username for alma :param password: SSH password for alma :param server: The remote server address (default is 'alma.icr.ac.uk')</p></div>
+    <div><p>Initialize SSH and SFTP connection parameters.</p>
+<p>:param server: Main SSH server address. :type server: str :param username: SSH username. :type username: str :param password: SSH password. :type password: str :param sftp: SFTP host (defaults to `server` if not specified). :type sftp: str</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -797,7 +799,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#download_remote_file" class="internal-link">pyalma.fileReader.FileReader.download_remote_file</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Download a remote file via SFTP.</p>
+<p>:param remote_path: Path on the remote server. :type remote_path: str :param local_path: Local destination path. :type local_path: str</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -821,7 +825,9 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Filter SSH command output using predefined patterns.</p>
+<p>:param output: Raw output from SSH command. :type output: str :return: Filtered output string. :rtype: str</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -845,7 +851,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#get_file_size" class="internal-link">pyalma.fileReader.FileReader.get_file_size</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Get the size of a file on the remote server.</p>
+<p>:param path: Remote file path. :type path: str :return: Size in bytes, or None if error. :rtype: int | None</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -869,7 +877,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#isfile" class="internal-link">pyalma.fileReader.FileReader.isfile</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Check whether the given remote path points to a file.</p>
+<p>:param path: Remote path. :type path: str :return: True if path is a file. :rtype: bool</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -893,7 +903,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#listdir" class="internal-link">pyalma.fileReader.FileReader.listdir</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>List files and directories at a remote path.</p>
+<p>:param path: Remote directory path. :type path: str :return: Tuple of (directories, files). :rtype: tuple[list[str], list[str]]</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -917,7 +929,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#load_h5ad_file" class="internal-link">pyalma.fileReader.FileReader.load_h5ad_file</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Download an h5ad file from the remote server in chunks.</p>
+<p>:param path: Remote file path. :type path: str :param local_path: Destination on local machine. :type local_path: str :return: Local path of the saved file or None if failed. :rtype: str | None</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -941,7 +955,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#read_file" class="internal-link">pyalma.fileReader.FileReader.read_file</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Read contents of a remote file.</p>
+<p>:param path: Remote file path. :type path: str :return: Decoded content (DataFrame, string, etc.). :rtype: Any</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -965,7 +981,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#read_file_into_df" class="internal-link">pyalma.fileReader.FileReader.read_file_into_df</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Read a remote file and convert it into a DataFrame.</p>
+<p>:param path: Path to the remote file. :type path: str :param type: File type (e.g., 'csv', 'vcf'). :type type: str :param kwargs: Additional keyword arguments for parsing. :return: Parsed data as a DataFrame or None. :rtype: pd.DataFrame | None</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -989,7 +1007,9 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Run a command on the remote server via SSH.</p>
+<p>:param command: Command to execute. :type command: str :return: Dictionary with 'output' and 'err' keys. :rtype: dict</p>
+</div>
   </div>
 </div><div class="basemethod">
   
@@ -1013,7 +1033,9 @@
   </div>
   <div class="docstring functionBody">
     <div class="interfaceinfo">overrides <code><a href="pyalma.fileReader.FileReader.html#write_to_remote_file" class="internal-link">pyalma.fileReader.FileReader.write_to_remote_file</a></code></div>
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Write data (string or DataFrame) to a file on the remote server.</p>
+<p>:param data: The data to write. :type data: pd.DataFrame | str :param remote_path: Destination path on the remote server. :type remote_path: str :param file_format: Format to use ('csv' supported for DataFrames). :type file_format: str :raises ValueError: If unsupported DataFrame format is specified. :raises TypeError: If data is not string or DataFrame.</p>
+</div>
   </div>
 </div><div class="baseinstancevariable">
   
@@ -1253,7 +1275,9 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Establish SSH and SFTP connections using Paramiko.</p>
+<p>:raises ConnectionError: If authentication or connection fails.</p>
+</div>
   </div>
 </div><div class="basemethod private">
   
@@ -1277,7 +1301,9 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Load SSH output filter patterns from YAML configuration.</p>
+<p>:return: Filter configuration dictionary. :rtype: dict</p>
+</div>
   </div>
 </div>
         </div>
@@ -1291,7 +1317,7 @@
   <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/ICR-RSE-Group/pyalma" class="projecthome">pyalma API</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    24.11.2 at 2025-04-22 13:33:22.
+    24.11.2 at 2025-04-22 15:32:52.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 

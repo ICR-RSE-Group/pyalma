@@ -119,13 +119,15 @@ class FileReader:
         """
         is_path = isinstance(content, str) and os.path.isfile(content)
         if not is_path and type != "pdf":
-            content = StringIO(content.decode('utf-8'))
+            content = StringIO(content.decode( "utf-8"))
 
-        if type in ['csv', 'tsv', 'bed']:
+        if type in ["csv", "tsv", "bed"]:
             return pd.read_csv(content, **kwargs)
-        elif type == "pdf":
-            return read_pdf_to_dataframe(content)
-        return content
+
+        if type == "pdf":
+            return read_pdf_to_dataframe(content)  # Uses the external module
+        
+        return content.getvalue()
 
     def read_vcf_file_into_df(self, path):
         """

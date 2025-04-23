@@ -4,6 +4,7 @@ import os
 from io import StringIO
 from .pdfreader import read_pdf_to_dataframe
 from .anndatareader import read_adata
+import logging
 class FileReader:
     """
     Abstract base class for reading and managing different file types, both locally and remotely.
@@ -163,6 +164,20 @@ class FileReader:
         :type path: str
         """
         os.remove(path)
+
+    def clean_tmp_files(self, path):
+        """
+        Deletes a temporary file if it exists.
+
+        :param path: Path to the file to delete.
+        :type path: str
+        """
+
+        if os.path.isfile(path):
+            os.remove(path)
+            logging.info(f"✅ [clean_tmp_files]: Deleted file {path}")
+        else:
+            logging.warning(f"⚠️ [clean_tmp_files]: Path does not exist or is not a file: {path}")
 
     def load_h5ad_file(self, path, local_path):
         """

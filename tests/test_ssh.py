@@ -123,16 +123,26 @@ def test_load_h5ad_file_failure(ssh_client2, mocker):
     ssh_client2.sftp_client.open.side_effect = Exception("Read error")
     assert ssh_client2.load_h5ad_file("remote/path", "local.h5ad") is None
 
+# def test_read_file_success(ssh_client2, mocker):
+#     mock_file = mocker.Mock()
+#     mock_file.read.return_value = b"content"
+#     ssh_client2.sftp_client.file.return_value.__enter__.return_value = mock_file
+#     ssh_client2.get_file_extension = lambda x: "txt"
+#     ssh_client2._read_file_content = lambda content, ext: content.decode()
+#     assert ssh_client2.read_file("remote/path") == "content"
+
 def test_read_file_success(ssh_client2, mocker):
     mock_file = mocker.Mock()
     mock_file.read.return_value = b"content"
-    ssh_client2.sftp_client.file.return_value.__enter__.return_value = mock_file
+    ssh_client2.sftp_client.open.return_value.__enter__.return_value = mock_file
     ssh_client2.get_file_extension = lambda x: "txt"
-    ssh_client2.decode_file_by_type = lambda content, ext: content.decode()
-    assert ssh_client2.read_file("remote/path") == "content"
+    mocker.patch.object(ssh_client2, 'decode_content_by_type', return_value="content")
+
+    result = ssh_client2.read_file("remote/path")
+    assert result == "content"
 
 def test_read_file_error(ssh_client2, mocker):
-    ssh_client2.sftp_client.file.side_effect = Exception("Bad path")
+    ssh_client2.sftp_client.open.side_effect = Exception("Bad path")
     assert ssh_client2.read_file("remote/path") is None
 
 
@@ -148,14 +158,14 @@ def test_read_file_into_df_other(ssh_client2, mocker):
     mock_file = mocker.Mock()
     mock_file.read.return_value = b"csv content"
     ssh_client2.sftp_client.open.return_value.__enter__.return_value = mock_file
-    ssh_client2.decode_file_by_type = lambda content, ext, **kwargs: "decoded"
+    ssh_client2.decode_content_by_type = lambda content, ext, **kwargs: "decoded"
     result = ssh_client2.read_file_into_df("remote/file.csv", "csv")
     assert result == "decoded"
 
 def test_read_file_into_df_error(ssh_client2, mocker):
-    ssh_client2.sftp_client.open.side_effect = Exception("Failed")
-    assert ssh_client2.read_file_into_df("remote/file.txt", "txt") is None
-
+    ssh_client2.sftp_client.open.side_effect = Exception("Bad path")
+    result = ssh_client2.read_file_into_df("remote/file.txt", "txt")
+    assert result is None
 
 # ---------- listdir Tests ----------
 

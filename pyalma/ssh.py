@@ -137,48 +137,15 @@ class SshClient(FileReader):
             logging.error(f"❌ [load_h5ad_file]: Error reading SSH h5ad file {path}: {e}")
             return None
 
-    def read_file(self, path, **kwargs):
-        """
-        Read contents of a remote file.
+    def _read_file_content(self, path, mode):
+        with self.sftp_client.open(path, mode) as file:
+            return file.read()
 
-        :param path: Remote file path.
-        :type path: str
-        :return: Decoded content (DataFrame, string, etc.).
-        :rtype: Any
-        """
-        try:
-            with self.sftp_client.file(path, 'r') as file:
-                file_content = file.read()
-                return self.decode_file_by_type(file_content, self.get_file_extension(path), **kwargs)
-        except Exception as e:
-            logging.error(f"❌ [read_file]: Error reading SSH file {path}: {e}")
-            return None
-
-    def read_file_into_df(self, path, type, **kwargs):
-        """
-        Read a remote file and convert it into a DataFrame.
-
-        :param path: Path to the remote file.
-        :type path: str
-        :param type: File type (e.g., 'csv', 'vcf').
-        :type type: str
-        :param kwargs: Additional keyword arguments for parsing.
-        :return: Parsed data as a DataFrame or None.
-        :rtype: pd.DataFrame | None
-        """
-        try:
-            if type == "vcf":
-                with tempfile.TemporaryDirectory() as tmpdirname:
-                    local_file = os.path.join(tmpdirname, "tmp.vcf")
-                    self.sftp_client.get(path, local_file)
-                    return self.read_vcf_file_into_df(local_file)
-            else:
-                with self.sftp_client.open(path, 'rb') as remote_file:
-                    file_content = remote_file.read()
-                    return self.decode_file_by_type(file_content, type, **kwargs)
-        except Exception as e:
-            logging.error(f"❌ [read_file_into_df]: Error reading SSH file into DataFrame {path}: {e}")
-            return None
+    def _read_vcf_as_dataframe(self, path):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            local_path = os.path.join(tmpdir, "tmp.vcf")
+            self.sftp_client.get(path, local_path)
+            return self.read_vcf_file_into_df(local_path)
 
     def listdir(self, path):
         """

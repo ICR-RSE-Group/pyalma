@@ -1,7 +1,7 @@
 import pysam
 import pandas as pd
 import os
-from io import StringIO
+from io import StringIO, BytesIO
 from .pdfreader import read_pdf_to_dataframe
 from .anndatareader import read_adata
 import logging
@@ -51,13 +51,39 @@ class FileReader:
         """
         self.clean_on_destruction = value
 
-    def read_file(self, path, type=None):
+    def read_file_into_df(self, path, type=None, as_binary=False, **kwargs):
         """
-        Abstract method. Should be implemented by subclasses to read a file.
+        File reader into a dataframe for local and remote paths
+        :param path: File path.
+        :param type: Optional file type override.
+        :param as_dataframe: Force a parsing into a DataFrame.
+        :param as_binary: Force raw binary return.
+        """
+        return self.read_file(path, type, as_dataframe=True, as_binary=as_binary, **kwargs)        
 
-        :raises NotImplementedError: Always.
+    def read_file(self, path, type=None, as_dataframe=False, as_binary=False, **kwargs):
         """
-        raise NotImplementedError("Subclasses must implement read_file")
+        Unified file reader for local or remote paths.
+
+        :param path: File path.
+        :param type: Optional file type override.
+        :param as_dataframe: Whether to parse into a DataFrame.
+        :param as_binary: Force raw binary return.
+        """
+        type = type or self.get_file_extension(path)
+        is_binary = as_binary or type in ["pdf", "png", "jpg", "jpeg", "zip", "gz"] #list not exhaustive
+        mode = "rb" if is_binary else "r"
+
+        try:
+            if as_dataframe and type == "vcf":
+                return self._read_vcf_as_dataframe(path)
+            #if file type is csv,tsv,pdf no need to first load the content since it could be directly done using pandas 
+            content = self._read_file_content(path, mode)
+            return self.decode_content_by_type(content, type, **kwargs)
+
+        except Exception as e:
+            logging.error(f"❌ [read_file]: Error reading file {path}: {e}")
+            return None
 
     def listdir(self, path):
         """
@@ -66,14 +92,6 @@ class FileReader:
         :raises NotImplementedError: Always.
         """
         raise NotImplementedError("Subclasses must implement listdir")
-
-    def read_file_into_df(self, path, type, **kwargs):
-        """
-        Abstract method. Should be implemented by subclasses to read a file into a DataFrame.
-
-        :raises NotImplementedError: Always.
-        """
-        raise NotImplementedError("Subclasses must implement read_file_into_df")
 
     def download_remote_file(self, remote_path, local_path):
         """
@@ -106,34 +124,35 @@ class FileReader:
         """
         return os.path.splitext(file_path)[1].lstrip('.')
 
-    def decode_file_by_type(self, content, type, **kwargs):
+    def decode_content_by_type(self, content, type, **kwargs):
         """
-        Decodes content based on file type, returning a DataFrame or raw text.
+        Decodes content based on file type, returning a DataFrame or raw string.
 
-        :param content: Raw content (str or bytes) or file path.
-        :type content: str | bytes
-        :param type: File type (csv, tsv, pdf, bed).
-        :type type: str
+        :param content: Raw content (str, bytes, or file path).
+        :param type: File type (e.g., 'csv', 'tsv', 'pdf', 'bed').
         :param kwargs: Extra arguments for `pandas.read_csv`.
-        :return: Parsed content.
-        :rtype: pd.DataFrame | str
+        :return: Decoded content (DataFrame, str, or bytes).
         """
-        is_path = isinstance(content, str) and os.path.isfile(content)
-        if not is_path and type != "pdf":
-            try:
-                content = StringIO(content.decode("utf-8"))
-                return content.getvalue()  # Return as string
-            except Exception:
-                return content  # Return raw binary if decoding fails
-
         if type in ["csv", "tsv", "bed"]:
+            # Accepts both string/bytes or file-like
+            # if isinstance(content, (str, bytes)):
+            #     try:
+            #         content = StringIO(content.decode("utf-8") if isinstance(content, bytes) else content)
+            #     except Exception:
+            #         return content  # return binary fallback
+            sep = kwargs.get('sep', "\t" if type in ["tsv", "bed"] else ",")
             return pd.read_csv(content, **kwargs)
 
         if type == "pdf":
-            return read_pdf_to_dataframe(content)  # Uses the external module
-        
-        return content
+            return read_pdf_to_dataframe(BytesIO(content) if isinstance(content, bytes) else content)
 
+        # Fallbacks, mainly for images or zipped files
+        if isinstance(content, bytes):
+            try:
+                return content.decode("utf-8")
+            except UnicodeDecodeError:
+                return content  # binary fallback
+        return content
 
     def read_vcf_file_into_df(self, path):
         """

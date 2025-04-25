@@ -63,10 +63,16 @@ class LocalFileReader(FileReader):
             logging.error(f"❌ [run_cmd]: Error executing command {command}: {e}")
             return {"output": None, "err": str(e)}
 
-    def _read_file_content(self, path, mode):
+    def _read_file_content(self, path, mode, is_text):
+        """
+        Smart file content reader.
+        - For text files: reads and returns content.
+        - For non-text (binary) files or for csv files: returns path to be handled later by decode_content_by_type.
+        """
+        if is_text:
+            with open(path, mode) as f:
+                return f.read()
         return path
-        # with open(path, mode) as file:
-        #     return file.read()
 
     def _read_vcf_as_dataframe(self, path):
         return self.read_vcf_file_into_df(path)

@@ -137,7 +137,7 @@ class SshClient(FileReader):
             logging.error(f"❌ [load_h5ad_file]: Error reading SSH h5ad file {path}: {e}")
             return None
 
-    def _read_file_content(self, path, mode):
+    def _read_file_content(self, path, mode, is_text):
         with self.sftp_client.open(path, mode) as file:
             return file.read()
 

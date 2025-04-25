@@ -58,6 +58,7 @@ def ssh_client2(mocker):
     client = SshClient("host", "user", "pass")
     client.ssh_client = mocker.MagicMock()
     client.sftp_client = mocker.MagicMock()
+    client.sftp_ssh_client = mocker.MagicMock()
     client.filter_output = lambda output: output.replace("filterme", "")
     return client
 
@@ -158,7 +159,7 @@ def test_read_file_into_df_other(ssh_client2, mocker):
     mock_file = mocker.Mock()
     mock_file.read.return_value = b"csv content"
     ssh_client2.sftp_client.open.return_value.__enter__.return_value = mock_file
-    ssh_client2.decode_content_by_type = lambda content, ext, **kwargs: "decoded"
+    ssh_client2.decode_content_by_type = lambda content, ext, as_dataframe, as_binary, **kwargs: "decoded"
     result = ssh_client2.read_file_into_df("remote/file.csv", "csv")
     assert result == "decoded"
 
@@ -204,8 +205,6 @@ def test_version_not_found(monkeypatch):
 def mock_super_del(mocker):
     return mocker.patch("pyalma.SshClient.__del__", autospec=True)
 
-import pytest
-
 @pytest.fixture
 def mock_super_del(mocker):
     # Patch __del__ to avoid calling the base class destructor logic
@@ -219,13 +218,15 @@ def test_del_closes_connections(mocker, mock_super_del):
             self.sftp_client = mocker.Mock()
             self.ssh_client = mocker.Mock()
             self.clean_on_destruction = False 
-
+            self.sftp_ssh_client = mocker.Mock()
         def __del__(self):
             # Call custom close logic
             if self.sftp_client:
                 self.sftp_client.close()
             if self.ssh_client:
                 self.ssh_client.close()
+            if self.sftp_ssh_client:
+                self.sftp_ssh_client.close()
             # Mocking the parent class's __del__ method to prevent side effects
             super().__del__()
 
@@ -259,6 +260,7 @@ def ssh_client_real(mocker):
     client = SshClient("host", "user", "pass")
     client.ssh_client = mocker.MagicMock()
     client.sftp_client = mocker.MagicMock()
+    client.sftp_ssh_client = mocker.Mock()
     return client
 
 # --- listdir tests ---
@@ -353,11 +355,6 @@ def test_write_to_remote_file_write_failure(ssh_client_real, caplog):
 
     assert result is None
     assert "❌ [write_to_remote_file]: Error writing to remote file" in caplog.text
-
-
-    import pytest
-from unittest.mock import MagicMock
-
 
 def test_isfile_true(ssh_client_real):
     # Create a mock stat result with st_mode for a regular file (0o100000)

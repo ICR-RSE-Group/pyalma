@@ -57,31 +57,41 @@ class FileReader:
         """
         File reader into a dataframe for local and remote paths
         :param path: File path.
-        :param type: Optional file type override.
+        :param type: Optional file type override (generic types: pdf, image, text, csv, zip).
         :param as_dataframe: Force a parsing into a DataFrame.
         :param as_binary: Force raw binary return.
         """
         return self.read_file(path, type, as_dataframe=True, as_binary=as_binary, **kwargs)        
+    def _is_binary_type(self, type):
+        binary_types = {"pdf", "image", "zip", "png", "jpg", "jpeg", "gz"} #list not exhaustive
+        return type in binary_types
+
+    def _is_text_type(self, type):
+        text_types = {"txt", "text", "out", "log", "err", "json"}
+        return type in text_types
+
+    def _is_auto_dataframe_type(self, type):
+        #force the below types to be read as dataframe
+        dataframe_types = {"csv", "tsv", "bed", "pdf", "vcf"}
+        return type in dataframe_types
 
     def read_file(self, path, type=None, as_dataframe=False, as_binary=False, **kwargs):
         """
         Unified file reader for local or remote paths.
-
         :param path: File path.
-        :param type: Optional file type override.
+        :param type: Optional file type override (generic types: pdf, image, text, csv, zip).
         :param as_dataframe: Whether to parse into a DataFrame.
         :param as_binary: Force raw binary return.
         """
         type = type or self.get_file_extension(path)
-        is_binary = as_binary or type in ["pdf", "png", "jpg", "jpeg", "zip", "gz"] #list not exhaustive
+        is_binary = as_binary or self._is_binary_type(type)
         mode = "rb" if is_binary else "r"
-
+        as_dataframe = self._is_auto_dataframe_type(type) or as_dataframe
         try:
             if as_dataframe and type == "vcf":
                 return self._read_vcf_as_dataframe(path)
-            #if file type is csv,tsv,pdf no need to first load the content since it could be directly done using pandas 
-            content = self._read_file_content(path, mode)
-            return self.decode_content_by_type(content, type, **kwargs)
+            content = self._read_file_content(path, mode, self._is_text_type(type))
+            return self.decode_content_by_type(content, type, as_dataframe, as_binary, **kwargs)
 
         except Exception as e:
             logging.error(f"❌ [read_file]: Error reading file {path}: {e}")
@@ -126,19 +136,19 @@ class FileReader:
         """
         return os.path.splitext(file_path)[1].lstrip('.')
 
-    def decode_content_by_type(self, content, type, **kwargs):
+    def decode_content_by_type(self, content, type, as_dataframe = False, as_binary=False, **kwargs):
         """
         Decodes content based on file type, returning a DataFrame or raw string.
 
         :param content: Raw content (str, bytes, or file path).
-        :param type: File type (e.g., 'csv', 'tsv', 'pdf', 'bed').
+        :param type: File type (file extension generic types: pdf, image, text, csv, zip).
         :param kwargs: Extra arguments for `pandas.read_csv`.
         :return: Decoded content (DataFrame, str, or bytes).
         """
         if type in ["csv", "tsv", "bed"]:
             # Accepts both string/bytes or file-like
             is_path = isinstance(content, str) and os.path.isfile(content)
-            if not is_path and type != "pdf":
+            if not is_path:
                 content = StringIO(content.decode( "utf-8"))
             #sep = kwargs.get('sep', "\t" if type in ["tsv", "bed"] else ",")
             return pd.read_csv(content, **kwargs)
@@ -154,7 +164,7 @@ class FileReader:
                 return content
             
         # Fallbacks, mainly for images or zipped files
-        if isinstance(content, bytes):
+        if isinstance(content, bytes) and not as_binary:
             try:
                 return content.decode("utf-8")
             except UnicodeDecodeError:

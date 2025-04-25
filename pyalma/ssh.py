@@ -40,20 +40,26 @@ class SshClient(FileReader):
         self.filtered_patterns = self._load_filtered_patterns()
         self._connect()
 
+    def _create_ssh_client(self):
+        client = paramiko.SSHClient()
+        client.load_system_host_keys()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        return client
+    
     def _connect(self):
         """
         Establish SSH and SFTP connections using Paramiko.
 
         :raises ConnectionError: If authentication or connection fails.
         """
-        self.ssh_client = paramiko.SSHClient()
-        self.ssh_client.load_system_host_keys()
-        self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.ssh_client = self._create_ssh_client()
+        self.sftp_ssh_client = self._create_ssh_client()
         self.sftp_client = None
 
         try:
-            self.ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
-            self.sftp_client = self.ssh_client.open_sftp()
+            self.ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30)
+            self.sftp_ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
+            self.sftp_client = self.sftp_ssh_client.open_sftp()
         except paramiko.AuthenticationException:
             raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}.")
         except paramiko.SSHException as e:
@@ -283,6 +289,8 @@ class SshClient(FileReader):
         try:
             if self.sftp_client:
                 self.sftp_client.close()
+            if self.sftp_ssh_client is not None:
+                self.sftp_ssh_client.close()
             if self.ssh_client:
                 self.ssh_client.close()
         except Exception as e:

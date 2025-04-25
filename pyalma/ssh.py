@@ -49,11 +49,14 @@ class SshClient(FileReader):
         self.ssh_client = paramiko.SSHClient()
         self.ssh_client.load_system_host_keys()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.sftp_client = None
+                
+        self.sftp_client = paramiko.SSHClient()
+        self.sftp_client.load_system_host_keys()
+        self.sftp_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         try:
-            self.ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
-            self.sftp_client = self.ssh_client.open_sftp()
+            self.ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30)
+            self.sftp_client = self.sftp_client.connect(self.sftp, username=self.username, password=self.password, timeout=30).open_sftp()            
         except paramiko.AuthenticationException:
             raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}.")
         except paramiko.SSHException as e:

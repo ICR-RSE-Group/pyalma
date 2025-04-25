@@ -4,7 +4,9 @@ import os
 from io import StringIO, BytesIO
 from .pdfreader import read_pdf_to_dataframe
 from .anndatareader import read_adata
+from .imageReader import read_image
 import logging
+
 class FileReader:
     """
     Abstract base class for reading and managing different file types, both locally and remotely.
@@ -135,17 +137,22 @@ class FileReader:
         """
         if type in ["csv", "tsv", "bed"]:
             # Accepts both string/bytes or file-like
-            # if isinstance(content, (str, bytes)):
-            #     try:
-            #         content = StringIO(content.decode("utf-8") if isinstance(content, bytes) else content)
-            #     except Exception:
-            #         return content  # return binary fallback
-            sep = kwargs.get('sep', "\t" if type in ["tsv", "bed"] else ",")
+            is_path = isinstance(content, str) and os.path.isfile(content)
+            if not is_path and type != "pdf":
+                content = StringIO(content.decode( "utf-8"))
+            #sep = kwargs.get('sep', "\t" if type in ["tsv", "bed"] else ",")
             return pd.read_csv(content, **kwargs)
 
         if type == "pdf":
             return read_pdf_to_dataframe(BytesIO(content) if isinstance(content, bytes) else content)
-
+        
+        if type in ["png", "jpg", "jpeg"]:
+            try:
+                return read_image(content)
+            except Exception as e:
+                logging.error(f"❌ [decode_content_by_type]: Failed to decode image: {e}")
+                return content
+            
         # Fallbacks, mainly for images or zipped files
         if isinstance(content, bytes):
             try:

@@ -57,7 +57,7 @@ class SshClient(FileReader):
 
         try:
             self.ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30)
-            sftp_client = self.sftp_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
+            sftp_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
             self.sftp_client = sftp_client.open_sftp()
         except paramiko.AuthenticationException:
             raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}.")

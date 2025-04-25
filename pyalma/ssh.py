@@ -53,6 +53,7 @@ class SshClient(FileReader):
         sftp_client = paramiko.SSHClient()
         sftp_client.load_system_host_keys()
         sftp_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.sftp_client = None
 
         try:
             self.ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30)

@@ -47,7 +47,7 @@ class SshClientClosed(FileReader):
 
         :raises ConnectionError: If authentication or connection fails.
         """
-        ssh_client - None
+        ssh_client = None
         ssh_client = paramiko.SSHClient()
         ssh_client.load_system_host_keys()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -55,7 +55,7 @@ class SshClientClosed(FileReader):
         try:
             if sftp:            
                 ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
-                ssh_client = sftp_client.open_sftp()
+                ssh_client = ssh_client.open_sftp()
             else:
                 ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30)                
         except paramiko.AuthenticationException:

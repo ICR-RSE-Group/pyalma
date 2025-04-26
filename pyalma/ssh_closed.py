@@ -9,7 +9,7 @@ from io import StringIO
 import yaml
 
 # Configure logging for debugging and error tracing
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 class SshClientClosed(FileReader):
     """

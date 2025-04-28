@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  ssh-server:
+    image: rastasheep/ubuntu-sshd:18.04
+    container_name: ssh-server
+    ports:
+      - "2222:22"  # Expose SSH port 22 to port 2222 on the host
+    environment:
+      - SSH_PASSWORD=my_password  # Password for the SSH user
+    entrypoint: ["/usr/sbin/sshd", "-D"]  # Specify entrypoint for the SSH server
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge

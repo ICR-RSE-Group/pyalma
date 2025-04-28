@@ -1,0 +1,35 @@
+name: Run Tests with Fake SSH Server
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      ssh-server:
+        image: rastasheep/ubuntu-sshd:18.04
+        ports:
+          - 2222:22
+        options: >-
+          --env SSH_PASSWORD=my_password
+          --entrypoint /usr/sbin/sshd -D
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get install -y docker-compose
+          
+      - name: Start SSH Server via Docker Compose
+        run: docker-compose up -d
+
+      - name: Run your tests
+        run: |
+          # Assuming you have SSH-based tests
+          sshpass -p 'my_password' ssh -o StrictHostKeyChecking=no -p 2222 root@localhost 'echo "SSH server is running!"'
+
+      - name: Shut down the SSH server
+        run: docker-compose down

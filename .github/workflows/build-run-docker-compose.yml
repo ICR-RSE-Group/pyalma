@@ -1,35 +1,51 @@
-name: Run Tests with Fake SSH Server
+name: Integration Test SSH
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - fix_issue_42
+  pull_request:
 
 jobs:
-  test:
+  integration-test:
     runs-on: ubuntu-latest
 
-    services:
-      ssh-server:
-        image: rastasheep/ubuntu-sshd:18.04
-        ports:
-          - 2222:22
-        options: >-
-          --env SSH_PASSWORD=my_password
-          --entrypoint /usr/sbin/sshd -D
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up Docker Compose
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install test dependencies
         run: |
-          sudo apt-get install -y docker-compose
-          
-      - name: Start SSH Server via Docker Compose
-        run: docker-compose up -d
+          sudo apt-get update
+          sudo apt-get install -y sshpass python3 python3-pip
+          pip3 install pytest
 
-      - name: Run your tests
+      - name: Install pyalma
+        run: pip install .
+        
+      - name: Start SSH Server Container
         run: |
-          # Assuming you have SSH-based tests
-          sshpass -p 'my_password' ssh -o StrictHostKeyChecking=no -p 2222 root@localhost 'echo "SSH server is running!"'
+          docker compose up -d --build
 
-      - name: Shut down the SSH server
-        run: docker-compose down
+      - name: Wait for SSH server to be ready
+        run: |
+          for i in {1..10}; do
+            if nc -z localhost 2222; then
+              echo "SSH server is up"
+              break
+            fi
+            echo "Waiting for SSH server..."
+            sleep 2
+          done
+
+      - name: Run Integration Tests
+        run: |
+          pytest tests/integration/
+
+      - name: Stop SSH Server Container
+        if: always()
+        run: docker compose down

@@ -22,25 +22,6 @@ class LocalFileReader(FileReader):
         """
         super().__init__()
 
-    def read_file(self, path):
-        """
-        Reads a local file and decodes its contents based on file extension.
-
-        :param path: Path to the local file.
-        :type path: str
-
-        :return: Decoded content (e.g., string, DataFrame) or None if an error occurs.
-        :rtype: Any
-        """
-        type = self.get_file_extension(path)
-        try:
-            with open(path, 'r') as file:
-                content = file.read()
-                return self.decode_file_by_type(content, type)
-        except Exception as e:
-            logging.error(f"❌ [read_file]: Error reading local file {path}: {e}")
-            return None
-
     def listdir(self, path):
         """
         Lists directories and files in a given local directory path.
@@ -82,27 +63,19 @@ class LocalFileReader(FileReader):
             logging.error(f"❌ [run_cmd]: Error executing command {command}: {e}")
             return {"output": None, "err": str(e)}
 
-    def read_file_into_df(self, path, type, **kwargs):
+    def _read_file_content(self, path, mode, is_text):
         """
-        Reads a local file and returns its content as a pandas DataFrame.
-
-        :param path: Path to the local file.
-        :type path: str
-        :param type: File type (e.g., "csv", "tsv", "vcf").
-        :type type: str
-        :param kwargs: Additional arguments to pass to the DataFrame parser.
-        :type kwargs: dict
-
-        :return: A pandas DataFrame or None if an error occurs.
-        :rtype: pd.DataFrame | None
+        Smart file content reader.
+        - For text files: reads and returns content.
+        - For non-text (binary) files or for csv files: returns path to be handled later by decode_content_by_type.
         """
-        try:
-            if type == "vcf":
-                return self.read_vcf_file_into_df(path)
-            return self.decode_file_by_type(path, type, **kwargs)
-        except Exception as e:
-            logging.error(f"❌ [read_file_into_df]: Error reading local file into DataFrame {path}: {e}")
-            return None
+        if is_text:
+            with open(path, mode) as f:
+                return f.read()
+        return path
+
+    def _read_vcf_as_dataframe(self, path):
+        return self.read_vcf_file_into_df(path)
 
     @staticmethod
     def get_local_file_size(file_path):

@@ -15,12 +15,14 @@ def get_doc(content):
     """
     import pymupdf  # PyMuPDF is imported here to avoid unnecessary dependency
 
-    if isinstance(content, (bytes, bytearray)):
+    if isinstance(content, bytes):
         return pymupdf.open(stream=content, filetype="pdf")
     elif isinstance(content, str):
         return pymupdf.open(content)
+    elif isinstance(content, BytesIO):
+        return pymupdf.open(stream=content.read(), filetype="pdf")
     else:
-        raise ValueError("Invalid content type. Expected a file path or binary stream.")
+        raise ValueError("Invalid content type. Expected a file path, bytes, or file-like object.")
 
 
 def read_pdf_to_dataframe(content):

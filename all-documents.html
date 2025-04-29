@@ -132,6 +132,14 @@
             <div class="kind">Module</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary"><span class="undocumented">No module docstring; 1/1 class documented</span></div>
+          </li><li id="pyalma.imageReader">
+            
+            <div class="fullName">pyalma<wbr></wbr>.image<wbr></wbr>Reader</div>
+            <div class="url">pyalma.imageReader.html</div>
+            <div class="type">Module</div>
+            <div class="kind">Module</div>
+            <div class="privacy">PUBLIC</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
           </li><li id="pyalma.local">
             
             <div class="fullName">pyalma<wbr></wbr>.local</div>
@@ -188,6 +196,14 @@
             <div class="kind">Function</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Reads an AnnData object from an H5AD file using Scanpy.</div>
+          </li><li id="pyalma.imageReader.read_image">
+            
+            <div class="fullName">pyalma<wbr></wbr>.image<wbr></wbr>Reader<wbr></wbr>.read<wbr></wbr>_image</div>
+            <div class="url">pyalma.imageReader.html#read_image</div>
+            <div class="type">Function</div>
+            <div class="kind">Function</div>
+            <div class="privacy">PUBLIC</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
           </li><li id="pyalma.fileReader.FileReader">
             
             <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader</div>
@@ -252,6 +268,38 @@
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Sets the `clean_on_destruction` flag.</div>
+          </li><li id="pyalma.fileReader.FileReader.read_file_into_df">
+            
+            <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.read<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</div>
+            <div class="url">pyalma.fileReader.FileReader.html#read_file_into_df</div>
+            <div class="type">Function</div>
+            <div class="kind">Method</div>
+            <div class="privacy">PUBLIC</div>
+            <div class="summary">File reader into a dataframe for local and remote paths :param path: File path. :param type: Optional file type override (generic types: pdf, image, text, csv, zip). :param as_dataframe: Force a parsing into a DataFrame...</div>
+          </li><li id="pyalma.fileReader.FileReader._is_binary_type">
+            
+            <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>._is<wbr></wbr>_binary<wbr></wbr>_type</div>
+            <div class="url">pyalma.fileReader.FileReader.html#_is_binary_type</div>
+            <div class="type">Function</div>
+            <div class="kind">Method</div>
+            <div class="privacy">PRIVATE</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
+          </li><li id="pyalma.fileReader.FileReader._is_text_type">
+            
+            <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>._is<wbr></wbr>_text<wbr></wbr>_type</div>
+            <div class="url">pyalma.fileReader.FileReader.html#_is_text_type</div>
+            <div class="type">Function</div>
+            <div class="kind">Method</div>
+            <div class="privacy">PRIVATE</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
+          </li><li id="pyalma.fileReader.FileReader._is_auto_dataframe_type">
+            
+            <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>._is<wbr></wbr>_auto<wbr></wbr>_dataframe<wbr></wbr>_type</div>
+            <div class="url">pyalma.fileReader.FileReader.html#_is_auto_dataframe_type</div>
+            <div class="type">Function</div>
+            <div class="kind">Method</div>
+            <div class="privacy">PRIVATE</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
           </li><li id="pyalma.fileReader.FileReader.read_file">
             
             <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.read<wbr></wbr>_file</div>
@@ -259,7 +307,7 @@
             <div class="type">Function</div>
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
-            <div class="summary">Abstract method. Should be implemented by subclasses to read a file.</div>
+            <div class="summary">Unified file reader for local or remote paths. :param path: File path. :param type: Optional file type override (generic types: pdf, image, text, csv, zip). :param as_dataframe: Whether to parse into a DataFrame...</div>
           </li><li id="pyalma.fileReader.FileReader.listdir">
             
             <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.listdir</div>
@@ -268,14 +316,6 @@
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Abstract method. Should be implemented by subclasses to list directory contents.</div>
-          </li><li id="pyalma.fileReader.FileReader.read_file_into_df">
-            
-            <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.read<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</div>
-            <div class="url">pyalma.fileReader.FileReader.html#read_file_into_df</div>
-            <div class="type">Function</div>
-            <div class="kind">Method</div>
-            <div class="privacy">PUBLIC</div>
-            <div class="summary">Abstract method. Should be implemented by subclasses to read a file into a DataFrame.</div>
           </li><li id="pyalma.fileReader.FileReader.download_remote_file">
             
             <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.download<wbr></wbr>_remote<wbr></wbr>_file</div>
@@ -300,14 +340,14 @@
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Extracts the file extension from a given path.</div>
-          </li><li id="pyalma.fileReader.FileReader.decode_file_by_type">
+          </li><li id="pyalma.fileReader.FileReader.decode_content_by_type">
             
-            <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.decode<wbr></wbr>_file<wbr></wbr>_by<wbr></wbr>_type</div>
-            <div class="url">pyalma.fileReader.FileReader.html#decode_file_by_type</div>
+            <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.decode<wbr></wbr>_content<wbr></wbr>_by<wbr></wbr>_type</div>
+            <div class="url">pyalma.fileReader.FileReader.html#decode_content_by_type</div>
             <div class="type">Function</div>
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
-            <div class="summary">Decodes content based on file type, returning a DataFrame or raw text.</div>
+            <div class="summary">Decodes content based on file type, returning a DataFrame or raw string.</div>
           </li><li id="pyalma.fileReader.FileReader.read_vcf_file_into_df">
             
             <div class="fullName">pyalma<wbr></wbr>.file<wbr></wbr>Reader<wbr></wbr>.<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.read<wbr></wbr>_vcf<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</div>
@@ -380,14 +420,6 @@
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Initializes an instance of LocalFileReader.</div>
-          </li><li id="pyalma.local.LocalFileReader.read_file">
-            
-            <div class="fullName">pyalma<wbr></wbr>.local<wbr></wbr>.<wbr></wbr>Local<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.read<wbr></wbr>_file</div>
-            <div class="url">pyalma.local.LocalFileReader.html#read_file</div>
-            <div class="type">Function</div>
-            <div class="kind">Method</div>
-            <div class="privacy">PUBLIC</div>
-            <div class="summary">Reads a local file and decodes its contents based on file extension.</div>
           </li><li id="pyalma.local.LocalFileReader.listdir">
             
             <div class="fullName">pyalma<wbr></wbr>.local<wbr></wbr>.<wbr></wbr>Local<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.listdir</div>
@@ -404,14 +436,22 @@
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Executes a shell command locally and returns its output.</div>
-          </li><li id="pyalma.local.LocalFileReader.read_file_into_df">
+          </li><li id="pyalma.local.LocalFileReader._read_file_content">
             
-            <div class="fullName">pyalma<wbr></wbr>.local<wbr></wbr>.<wbr></wbr>Local<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.read<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</div>
-            <div class="url">pyalma.local.LocalFileReader.html#read_file_into_df</div>
+            <div class="fullName">pyalma<wbr></wbr>.local<wbr></wbr>.<wbr></wbr>Local<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>._read<wbr></wbr>_file<wbr></wbr>_content</div>
+            <div class="url">pyalma.local.LocalFileReader.html#_read_file_content</div>
             <div class="type">Function</div>
             <div class="kind">Method</div>
-            <div class="privacy">PUBLIC</div>
-            <div class="summary">Reads a local file and returns its content as a pandas DataFrame.</div>
+            <div class="privacy">PRIVATE</div>
+            <div class="summary">Smart file content reader.</div>
+          </li><li id="pyalma.local.LocalFileReader._read_vcf_as_dataframe">
+            
+            <div class="fullName">pyalma<wbr></wbr>.local<wbr></wbr>.<wbr></wbr>Local<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>._read<wbr></wbr>_vcf<wbr></wbr>_as<wbr></wbr>_dataframe</div>
+            <div class="url">pyalma.local.LocalFileReader.html#_read_vcf_as_dataframe</div>
+            <div class="type">Function</div>
+            <div class="kind">Method</div>
+            <div class="privacy">PRIVATE</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
           </li><li id="pyalma.local.LocalFileReader.get_local_file_size">
             
             <div class="fullName">pyalma<wbr></wbr>.local<wbr></wbr>.<wbr></wbr>Local<wbr></wbr>File<wbr></wbr>Reader<wbr></wbr>.get<wbr></wbr>_local<wbr></wbr>_file<wbr></wbr>_size</div>
@@ -564,22 +604,22 @@
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Download an h5ad file from the remote server in chunks.</div>
-          </li><li id="pyalma.ssh.SshClient.read_file">
+          </li><li id="pyalma.ssh.SshClient._read_file_content">
             
-            <div class="fullName">pyalma<wbr></wbr>.ssh<wbr></wbr>.<wbr></wbr>Ssh<wbr></wbr>Client<wbr></wbr>.read<wbr></wbr>_file</div>
-            <div class="url">pyalma.ssh.SshClient.html#read_file</div>
+            <div class="fullName">pyalma<wbr></wbr>.ssh<wbr></wbr>.<wbr></wbr>Ssh<wbr></wbr>Client<wbr></wbr>._read<wbr></wbr>_file<wbr></wbr>_content</div>
+            <div class="url">pyalma.ssh.SshClient.html#_read_file_content</div>
             <div class="type">Function</div>
             <div class="kind">Method</div>
-            <div class="privacy">PUBLIC</div>
-            <div class="summary">Read contents of a remote file.</div>
-          </li><li id="pyalma.ssh.SshClient.read_file_into_df">
+            <div class="privacy">PRIVATE</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
+          </li><li id="pyalma.ssh.SshClient._read_vcf_as_dataframe">
             
-            <div class="fullName">pyalma<wbr></wbr>.ssh<wbr></wbr>.<wbr></wbr>Ssh<wbr></wbr>Client<wbr></wbr>.read<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</div>
-            <div class="url">pyalma.ssh.SshClient.html#read_file_into_df</div>
+            <div class="fullName">pyalma<wbr></wbr>.ssh<wbr></wbr>.<wbr></wbr>Ssh<wbr></wbr>Client<wbr></wbr>._read<wbr></wbr>_vcf<wbr></wbr>_as<wbr></wbr>_dataframe</div>
+            <div class="url">pyalma.ssh.SshClient.html#_read_vcf_as_dataframe</div>
             <div class="type">Function</div>
             <div class="kind">Method</div>
-            <div class="privacy">PUBLIC</div>
-            <div class="summary">Read a remote file and convert it into a DataFrame.</div>
+            <div class="privacy">PRIVATE</div>
+            <div class="summary"><span class="undocumented">Undocumented</span></div>
           </li><li id="pyalma.ssh.SshClient.listdir">
             
             <div class="fullName">pyalma<wbr></wbr>.ssh<wbr></wbr>.<wbr></wbr>Ssh<wbr></wbr>Client<wbr></wbr>.listdir</div>

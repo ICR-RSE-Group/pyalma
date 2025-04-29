@@ -161,7 +161,7 @@
         
 
         
-            <div class="itemName"><code><a href="#decode_file_by_type" class="internal-link" title="pyalma.fileReader.FileReader.decode_file_by_type">decode<wbr></wbr>_file<wbr></wbr>_by<wbr></wbr>_type</a></code>
+            <div class="itemName"><code><a href="#decode_content_by_type" class="internal-link" title="pyalma.fileReader.FileReader.decode_content_by_type">decode<wbr></wbr>_content<wbr></wbr>_by<wbr></wbr>_type</a></code>
             </div>
         
 
@@ -292,6 +292,36 @@
 
         
             <div class="itemName"><code><a href="#write_to_remote_file" class="internal-link" title="pyalma.fileReader.FileReader.write_to_remote_file">write<wbr></wbr>_to<wbr></wbr>_remote<wbr></wbr>_file</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_is_auto_dataframe_type" class="internal-link" title="pyalma.fileReader.FileReader._is_auto_dataframe_type">_is<wbr></wbr>_auto<wbr></wbr>_dataframe<wbr></wbr>_type</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_is_binary_type" class="internal-link" title="pyalma.fileReader.FileReader._is_binary_type">_is<wbr></wbr>_binary<wbr></wbr>_type</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_is_text_type" class="internal-link" title="pyalma.fileReader.FileReader._is_text_type">_is<wbr></wbr>_text<wbr></wbr>_type</a></code>
             </div>
         
 
@@ -444,8 +474,8 @@
   </tr><tr class="method">
     
     <td>Method</td>
-    <td><code><a href="#decode_file_by_type" class="internal-link" title="pyalma.fileReader.FileReader.decode_file_by_type">decode<wbr></wbr>_file<wbr></wbr>_by<wbr></wbr>_type</a></code></td>
-    <td>Decodes content based on file type, returning a DataFrame or raw text.</td>
+    <td><code><a href="#decode_content_by_type" class="internal-link" title="pyalma.fileReader.FileReader.decode_content_by_type">decode<wbr></wbr>_content<wbr></wbr>_by<wbr></wbr>_type</a></code></td>
+    <td>Decodes content based on file type, returning a DataFrame or raw string.</td>
   </tr><tr class="method">
     
     <td>Method</td>
@@ -485,12 +515,12 @@
     
     <td>Method</td>
     <td><code><a href="#read_file" class="internal-link" title="pyalma.fileReader.FileReader.read_file">read<wbr></wbr>_file</a></code></td>
-    <td>Abstract method. Should be implemented by subclasses to read a file.</td>
+    <td>Unified file reader for local or remote paths. :param path: File path. :param type: Optional file type override (generic types: pdf, image, text, csv, zip). :param as_dataframe: Whether to parse into a DataFrame...</td>
   </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#read_file_into_df" class="internal-link" title="pyalma.fileReader.FileReader.read_file_into_df">read<wbr></wbr>_file<wbr></wbr>_into<wbr></wbr>_df</a></code></td>
-    <td>Abstract method. Should be implemented by subclasses to read a file into a DataFrame.</td>
+    <td>File reader into a dataframe for local and remote paths :param path: File path. :param type: Optional file type override (generic types: pdf, image, text, csv, zip). :param as_dataframe: Force a parsing into a DataFrame...</td>
   </tr><tr class="method">
     
     <td>Method</td>
@@ -525,6 +555,21 @@
     
     <td>Instance Variable</td>
     <td><code><a href="#remote" class="internal-link" title="pyalma.fileReader.FileReader.remote">remote</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><code><a href="#_is_auto_dataframe_type" class="internal-link" title="pyalma.fileReader.FileReader._is_auto_dataframe_type">_is<wbr></wbr>_auto<wbr></wbr>_dataframe<wbr></wbr>_type</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><code><a href="#_is_binary_type" class="internal-link" title="pyalma.fileReader.FileReader._is_binary_type">_is<wbr></wbr>_binary<wbr></wbr>_type</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><code><a href="#_is_text_type" class="internal-link" title="pyalma.fileReader.FileReader._is_text_type">_is<wbr></wbr>_text<wbr></wbr>_type</a></code></td>
     <td><span class="undocumented">Undocumented</span></td>
   </tr>
 </table>
@@ -617,18 +662,18 @@
 </div><div class="basemethod">
   
   
-  <a name="pyalma.fileReader.FileReader.decode_file_by_type">
+  <a name="pyalma.fileReader.FileReader.decode_content_by_type">
     
   </a>
-  <a name="decode_file_by_type">
+  <a name="decode_content_by_type">
     
   </a>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">decode_file_by_type</span><span class="function-signature">(self, content, type, **kwargs)</span>:
+    <span class="py-keyword">def</span> <span class="py-defname">decode_content_by_type</span><span class="function-signature">(self, content, type, as_dataframe=False, as_binary=False, **kwargs)</span>:
     
-    <a class="headerLink" href="#decode_file_by_type" title="pyalma.fileReader.FileReader.decode_file_by_type">
+    <a class="headerLink" href="#decode_content_by_type" title="pyalma.fileReader.FileReader.decode_content_by_type">
       
       
       ¶
@@ -636,8 +681,8 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Decodes content based on file type, returning a DataFrame or raw text.</p>
-<p>:param content: Raw content (str or bytes) or file path. :type content: str | bytes :param type: File type (csv, tsv, pdf, bed). :type type: str :param kwargs: Extra arguments for `pandas.read_csv`. :return: Parsed content. :rtype: pd.DataFrame | str</p>
+    <div><p>Decodes content based on file type, returning a DataFrame or raw string.</p>
+<p>:param content: Raw content (str, bytes, or file path). :param type: File type (file extension generic types: pdf, image, text, csv, zip). :param kwargs: Extra arguments for `pandas.read_csv`. :return: Decoded content (DataFrame, str, or bytes).</p>
 </div>
   </div>
 </div><div class="basemethod">
@@ -838,7 +883,7 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">read_file</span><span class="function-signature">(self, path, type=None)</span>:
+    <span class="py-keyword">def</span> <span class="py-defname">read_file</span><span class="function-signature">(self, path, type=None, as_dataframe=False, as_binary=False, **kwargs)</span>:
     
     <a class="headerLink" href="#read_file" title="pyalma.fileReader.FileReader.read_file">
       
@@ -847,10 +892,8 @@
     </a>
   </div>
   <div class="docstring functionBody">
-    <div class="interfaceinfo">overridden in <code><a href="pyalma.local.LocalFileReader.html" class="internal-link">pyalma.local.LocalFileReader</a></code>, <code><a href="pyalma.ssh.SshClient.html" class="internal-link">pyalma.ssh.SshClient</a></code></div>
-    <div><p>Abstract method. Should be implemented by subclasses to read a file.</p>
-<p>:raises NotImplementedError: Always.</p>
-</div>
+    
+    <div><p>Unified file reader for local or remote paths. :param path: File path. :param type: Optional file type override (generic types: pdf, image, text, csv, zip). :param as_dataframe: Whether to parse into a DataFrame. :param as_binary: Force raw binary return.</p></div>
   </div>
 </div><div class="basemethod">
   
@@ -864,7 +907,7 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">read_file_into_df</span><span class="function-signature">(self, path, type, **kwargs)</span>:
+    <span class="py-keyword">def</span> <span class="py-defname">read_file_into_df</span><span class="function-signature">(self, path, type=None, as_binary=False, **kwargs)</span>:
     
     <a class="headerLink" href="#read_file_into_df" title="pyalma.fileReader.FileReader.read_file_into_df">
       
@@ -873,10 +916,8 @@
     </a>
   </div>
   <div class="docstring functionBody">
-    <div class="interfaceinfo">overridden in <code><a href="pyalma.local.LocalFileReader.html" class="internal-link">pyalma.local.LocalFileReader</a></code>, <code><a href="pyalma.ssh.SshClient.html" class="internal-link">pyalma.ssh.SshClient</a></code></div>
-    <div><p>Abstract method. Should be implemented by subclasses to read a file into a DataFrame.</p>
-<p>:raises NotImplementedError: Always.</p>
-</div>
+    
+    <div><p>File reader into a dataframe for local and remote paths :param path: File path. :param type: Optional file type override (generic types: pdf, image, text, csv, zip). :param as_dataframe: Force a parsing into a DataFrame. :param as_binary: Force raw binary return.</p></div>
   </div>
 </div><div class="basemethod">
   
@@ -1056,6 +1097,78 @@
     <div><p class="undocumented">Undocumented</p></div>
     
   </div>
+</div><div class="basemethod private">
+  
+  
+  <a name="pyalma.fileReader.FileReader._is_auto_dataframe_type">
+    
+  </a>
+  <a name="_is_auto_dataframe_type">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">_is_auto_dataframe_type</span><span class="function-signature">(self, type)</span>:
+    
+    <a class="headerLink" href="#_is_auto_dataframe_type" title="pyalma.fileReader.FileReader._is_auto_dataframe_type">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+  </div>
+</div><div class="basemethod private">
+  
+  
+  <a name="pyalma.fileReader.FileReader._is_binary_type">
+    
+  </a>
+  <a name="_is_binary_type">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">_is_binary_type</span><span class="function-signature">(self, type)</span>:
+    
+    <a class="headerLink" href="#_is_binary_type" title="pyalma.fileReader.FileReader._is_binary_type">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+  </div>
+</div><div class="basemethod private">
+  
+  
+  <a name="pyalma.fileReader.FileReader._is_text_type">
+    
+  </a>
+  <a name="_is_text_type">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">_is_text_type</span><span class="function-signature">(self, type)</span>:
+    
+    <a class="headerLink" href="#_is_text_type" title="pyalma.fileReader.FileReader._is_text_type">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+  </div>
 </div>
         </div>
       
@@ -1068,7 +1181,7 @@
   <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/ICR-RSE-Group/pyalma" class="projecthome">pyalma API</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    24.11.2 at 2025-04-28 12:38:42.
+    24.11.2 at 2025-04-29 09:21:12.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 

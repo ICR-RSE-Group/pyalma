@@ -1,5 +1,5 @@
 from pyalma import SshClient, LocalFileReader
-
+import pytest
 def test_read_file():
     # Simulated SSH container credentials (Docker Compose setup)
     host = "localhost"
@@ -34,6 +34,16 @@ def test_read_file():
 def test_integration_remote():
     test_read_file()
 
+def test_testuser1_can_run_script():
+    ssh = SshClient("localhost", "testuser1", "password1", None, port=2222)
+    result = ssh.run_cmd("bash ~/test_data/hello.sh")
+    assert "Hello from testuser1" in result["output"]
+
+def test_restricted_user_cannot_run_script():
+    ssh = SshClient("localhost", "restricted", "password2", None, port=2222)
+    result = ssh.run_cmd("bash ~/test_data/hello.sh")
+    print(result)
+    assert result["output"] is None
 
 # local_path = "/Users/msarkis/Documents/pyalma/pyalma_test_folder/"
 # local = LocalFileReader()

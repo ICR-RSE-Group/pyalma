@@ -7,4 +7,6 @@ services:
       - "2222:22"
     container_name: ssh-test-server
     volumes:
-      - ./tests/tests_files:/root/remote_files  # Mount test_files here
+      - ./tests/integration/test_files:/root/remote_files  # Mount test_files here
+      - ./tests/integration/test_files:/home/testuser1/test_data:ro #mount test files to another user on docker
+      - ./tests/integration/test_files:/home/restricted/test_data:ro #mount test files to another user on docker

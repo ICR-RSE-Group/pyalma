@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - fix_issue_42
   pull_request:
 
 jobs:
@@ -42,6 +41,21 @@ jobs:
             sleep 2
           done
 
+      - name: Wait for SSH server authentication for all users
+        run: |
+            for user in testuser1:password1 restricted:password2; do
+              IFS=":" read username password <<< "$user"
+              for i in {1..10}; do
+                if sshpass -p "$password" ssh -o StrictHostKeyChecking=no -p 2222 $username@localhost "echo connected"; then
+                  echo "$username is ready"
+                  break
+                fi
+                echo "Waiting for SSH auth for $username..."
+                sleep 3
+              done
+            done
+        
+  
       - name: Run Integration Tests
         run: |
           pytest tests/integration/

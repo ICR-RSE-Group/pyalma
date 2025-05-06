@@ -45,7 +45,7 @@ jobs:
         run: |
             for user in testuser1:password1 restricted:password2; do
               IFS=":" read username password <<< "$user"
-              for i in {1..10}; do
+              for i in {1..5}; do
                 if sshpass -p "$password" ssh -o StrictHostKeyChecking=no -p 2222 $username@localhost "echo connected"; then
                   echo "$username is ready"
                   break
@@ -63,3 +63,4 @@ jobs:
       - name: Stop SSH Server Container
         if: always()
         run: docker compose down
+      

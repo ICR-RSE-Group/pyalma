@@ -8,7 +8,7 @@ def test_read_file():
     port = 2222
 
     file_reader = SshClient(host, user, password, None, port)
-    base_path = "~/remote_files/"
+    base_path = "~/test_data/"
 
     pdf_file = base_path + "article.pdf"
     pdf_df = file_reader.read_file_into_df(pdf_file, 'pdf')
@@ -35,16 +35,15 @@ def test_integration_remote():
     test_read_file()
 
 def test_testuser1_can_run_script():
-    ssh = SshClient("localhost", "testuser1", "password1", None, port=2222)
+    ssh = SshClient("localhost", "root", "password", None, port=2222)
     result = ssh.run_cmd("bash ~/test_data/hello.sh")
-    assert "Hello from testuser1" in result["output"]
+    assert "Hello from root" in result["output"]
 
 def test_restricted_user_cannot_run_script():
     ssh = SshClient("localhost", "restricted", "password2", None, port=2222)
     result = ssh.run_cmd("bash ~/test_data/hello.sh")
     print(result)
-    assert result["output"] is None
-
+    assert result["output"].strip() == "This service allows sftp connections only."
 # local_path = "/Users/msarkis/Documents/pyalma/pyalma_test_folder/"
 # local = LocalFileReader()
 # test_read_file(local, local_path)

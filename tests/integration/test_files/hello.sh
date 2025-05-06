@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "Hello from testuser1"
+echo "Hello from root"
 

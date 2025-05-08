@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  ssh-server:
+    build: .
+    ports:
+      - "2222:22"
+    container_name: ssh-test-server
+    volumes:
+      - ./tests/integration/test_files:/root/test_data  # Mount test_files here
+      - ./tests/integration/test_files:/home/testuser1/test_data:ro #mount test files to another user on docker
+      - ./tests/integration/test_files:/home/restricted/test_data:ro #mount test files to another user on docker

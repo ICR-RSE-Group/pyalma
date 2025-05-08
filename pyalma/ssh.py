@@ -17,7 +17,7 @@ class SshClient(FileReader):
     Enables reading, writing, listing, and transferring files on a remote server securely.
     """
 
-    def __init__(self, server="alma.icr.ac.uk", username=None, password=None, sftp="alma-app.icr.ac.uk"):
+    def __init__(self, server="alma.icr.ac.uk", username=None, password=None, sftp="alma-app.icr.ac.uk", port=22):
         """
         Initialize SSH and SFTP connection parameters.
 
@@ -36,6 +36,7 @@ class SshClient(FileReader):
         self.sftp = self.server if sftp is None else sftp.strip()
         self.username = username.strip() if username else None
         self.password = password.strip() if password else None
+        self.port = port
         self.filter_file = os.path.join(os.path.dirname(__file__), "config", "messages.yaml")
         self.filtered_patterns = self._load_filtered_patterns()
         self._connect()
@@ -57,8 +58,8 @@ class SshClient(FileReader):
         self.sftp_client = None
 
         try:
-            self.ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30)
-            self.sftp_ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30)
+            self.ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30, port=self.port)
+            self.sftp_ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30, port=self.port)
             self.sftp_client = self.sftp_ssh_client.open_sftp()
         except paramiko.AuthenticationException:
             raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}.")

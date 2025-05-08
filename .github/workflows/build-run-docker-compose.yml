@@ -1,0 +1,66 @@
+name: Integration Test SSH
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass python3 python3-pip
+          pip3 install pytest
+
+      - name: Install pyalma
+        run: pip install .
+        
+      - name: Start SSH Server Container
+        run: |
+          docker compose up -d --build
+
+      - name: Wait for SSH server to be ready
+        run: |
+          for i in {1..10}; do
+            if nc -z localhost 2222; then
+              echo "SSH server is up"
+              break
+            fi
+            echo "Waiting for SSH server..."
+            sleep 2
+          done
+
+      - name: Wait for SSH server authentication for all users
+        run: |
+            for user in testuser1:password1 restricted:password2; do
+              IFS=":" read username password <<< "$user"
+              for i in {1..5}; do
+                if sshpass -p "$password" ssh -o StrictHostKeyChecking=no -p 2222 $username@localhost "echo connected"; then
+                  echo "$username is ready"
+                  break
+                fi
+                echo "Waiting for SSH auth for $username..."
+                sleep 3
+              done
+            done
+        
+  
+      - name: Run Integration Tests
+        run: |
+          pytest tests/integration/
+
+      - name: Stop SSH Server Container
+        if: always()
+        run: docker compose down
+      

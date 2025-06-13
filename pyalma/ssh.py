@@ -8,8 +8,6 @@ import pandas as pd
 from io import StringIO
 import yaml
 
-# Configure logging for debugging and error tracing
-logging.basicConfig(level=logging.DEBUG)
 
 class SshClient(FileReader):
     """

@@ -5,7 +5,7 @@ import sys
 from unittest import mock
 from unittest.mock import MagicMock, patch
 from importlib.metadata import PackageNotFoundError
-from pyalma import SshClient
+from pyalma import SshClient, SecureSshClient
 import tempfile
 import pandas as pd
 # ---------- Connection Tests ----------
@@ -422,3 +422,20 @@ def test_disconnect(mocker):
     ssh_conn.sftp_client.close.assert_called_once()
     ssh_conn.sftp_ssh_client.close.assert_called_once()
     ssh_conn.ssh_client.close.assert_called_once()
+
+def test_secure_ssh_client_init(mocker):
+    # Mock logging.info
+    mock_log_info = mocker.patch("logging.info")
+    # Mock SshClient.__init__ to avoid real SSH connection attempts
+    mock_super_init = mocker.patch.object(SshClient, "__init__", return_value=None)
+
+    server = "test.server.com"
+    username = "testuser"
+    sftp = "test.sftp.server"
+    port = 2222
+
+    client = SecureSshClient(server=server, username=username, sftp=sftp, port=port)
+
+    mock_log_info.assert_called_once_with("🔐 Secure mode: only key-based login allowed.")
+   #mock_super_init.assert_called_once_with(server, username, None, port, sftp)
+    assert isinstance(client, SecureSshClient)

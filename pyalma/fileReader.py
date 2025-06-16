@@ -30,10 +30,13 @@ class FileReader:
         """
         Destructor to clean up temporary files if clean_on_destruction is enabled.
         """
-        if self.clean_on_destruction:
-            for path in self.files_to_clean:
-                self.clean_tmp_files(path)
-            print("Resource cleaned.")
+        try:
+            if getattr(self, "clean_on_destruction", False):
+                for path in getattr(self, "files_to_clean", []):
+                    self.clean_tmp_files(path)
+                print("Resource cleaned.")
+        except Exception:
+            pass
 
     def is_remote(self):
         """

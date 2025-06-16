@@ -46,6 +46,16 @@ print(result["output"])
 print(result["err"])
 ```
 
+## For remote access using Ssh Keys, from within python or jupyter notebooks
+```
+from pyalma import SecureSshClient
+
+secure_ssh = SecureSshClient(server='your_server', username='your_username')
+result = ssh.run_cmd('ls -l')
+print(result["output"])
+print(result["err"])
+```
+
 ## For local access, from within python
 ```
 from pyalma import LocalFileReader
@@ -74,3 +84,25 @@ ssh = SshClient(server='your_server', username='your_username', password='your_p
 pdf_df = ssh.read_file_into_df(path,'pdf')
 # returned dataframe contains three columns : "Page", "Content" and "Images"
 ```
+
+
+
+# Setting Up SSH Keys for `SecureSshClient`
+## Generate a new SSH key:
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+## Add Your SSH Key to the Remote Server:
+Access and copy the newly generated public key via:
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+Then paste it into the remote server’s `~/.ssh/authorized_keys` file.
+
+## Test the setup
+Before using the Python client, confirm the connection works:
+```bash
+ssh your_username@alma.icr.ac.uk
+```
+You should connect without a password prompt
+

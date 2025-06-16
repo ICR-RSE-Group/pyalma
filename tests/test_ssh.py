@@ -403,3 +403,22 @@ def test_get_file_size_failure(ssh_client_real, caplog):
     assert size is None
     assert "❌ [get_file_size]: Error reading SSH file size for /remote/missing.txt" in caplog.text
     ssh_client_real.sftp_client.stat.assert_called_once_with("/remote/missing.txt")
+
+
+
+def test_disconnect(mocker):
+    mocker.patch.object(SshClient, '_connect', return_value=None)
+    ssh_conn = SshClient("host", "user", "pass")
+
+    # Mock the clients
+    ssh_conn.sftp_client = mocker.Mock()
+    ssh_conn.sftp_ssh_client = mocker.Mock()
+    ssh_conn.ssh_client = mocker.Mock()
+
+    # Call disconnect
+    ssh_conn.disconnect()
+
+    # Assert close methods were called
+    ssh_conn.sftp_client.close.assert_called_once()
+    ssh_conn.sftp_ssh_client.close.assert_called_once()
+    ssh_conn.ssh_client.close.assert_called_once()

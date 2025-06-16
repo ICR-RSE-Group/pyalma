@@ -252,6 +252,13 @@ class SshClient(FileReader):
         Destructor that closes SSH and SFTP connections and cleans up resources.
         """
         super().__del__()
+        self.disconnect()
+
+    def disconnect(self):
+        """
+        Safely closes active SFTP and SSH connections if they exist.
+        Logs an error if any issue occurs during the disconnection.
+        """
         try:
             if self.sftp_client:
                 self.sftp_client.close()
@@ -260,4 +267,4 @@ class SshClient(FileReader):
             if self.ssh_client:
                 self.ssh_client.close()
         except Exception as e:
-            logging.error(f"❌ [__del__]: Error closing SSH/SFTP connections: {e}")
+            logging.error(f"❌ [disconnect]: Error closing SSH/SFTP connections: {e}")

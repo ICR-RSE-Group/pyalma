@@ -8,8 +8,6 @@ import pandas as pd
 from io import StringIO
 import yaml
 
-# Configure logging for debugging and error tracing
-logging.basicConfig(level=logging.DEBUG)
 
 class SshClient(FileReader):
     """
@@ -39,7 +37,7 @@ class SshClient(FileReader):
         self.port = port
         self.filter_file = os.path.join(os.path.dirname(__file__), "config", "messages.yaml")
         self.filtered_patterns = self._load_filtered_patterns()
-        self._connect()
+        self._connect(password=self.password)
 
     def _create_ssh_client(self):
         client = paramiko.SSHClient()
@@ -47,7 +45,7 @@ class SshClient(FileReader):
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         return client
     
-    def _connect(self):
+    def _connect(self,**kwargs):
         """
         Establish SSH and SFTP connections using Paramiko.
 
@@ -58,8 +56,8 @@ class SshClient(FileReader):
         self.sftp_client = None
 
         try:
-            self.ssh_client.connect(self.server, username=self.username, password=self.password, timeout=30, port=self.port)
-            self.sftp_ssh_client.connect(self.sftp, username=self.username, password=self.password, timeout=30, port=self.port)
+            self.ssh_client.connect(self.server, username=self.username, timeout=30, port=self.port, **kwargs)
+            self.sftp_ssh_client.connect(self.sftp, username=self.username, timeout=30, port=self.port, **kwargs)
             self.sftp_client = self.sftp_ssh_client.open_sftp()
         except paramiko.AuthenticationException:
             raise ConnectionError(f"❌ [_connect]: Authentication failed for {self.username}@{self.server}.")
@@ -254,6 +252,13 @@ class SshClient(FileReader):
         Destructor that closes SSH and SFTP connections and cleans up resources.
         """
         super().__del__()
+        self.disconnect()
+
+    def disconnect(self):
+        """
+        Safely closes active SFTP and SSH connections if they exist.
+        Logs an error if any issue occurs during the disconnection.
+        """
         try:
             if self.sftp_client:
                 self.sftp_client.close()
@@ -262,4 +267,4 @@ class SshClient(FileReader):
             if self.ssh_client:
                 self.ssh_client.close()
         except Exception as e:
-            logging.error(f"❌ [__del__]: Error closing SSH/SFTP connections: {e}")
+            logging.error(f"❌ [disconnect]: Error closing SSH/SFTP connections: {e}")

@@ -5,7 +5,7 @@ import sys
 from unittest import mock
 from unittest.mock import MagicMock, patch
 from importlib.metadata import PackageNotFoundError
-from pyalma import SshClient
+from pyalma import SshClient, SecureSshClient
 import tempfile
 import pandas as pd
 # ---------- Connection Tests ----------
@@ -403,3 +403,39 @@ def test_get_file_size_failure(ssh_client_real, caplog):
     assert size is None
     assert "❌ [get_file_size]: Error reading SSH file size for /remote/missing.txt" in caplog.text
     ssh_client_real.sftp_client.stat.assert_called_once_with("/remote/missing.txt")
+
+
+
+def test_disconnect(mocker):
+    mocker.patch.object(SshClient, '_connect', return_value=None)
+    ssh_conn = SshClient("host", "user", "pass")
+
+    # Mock the clients
+    ssh_conn.sftp_client = mocker.Mock()
+    ssh_conn.sftp_ssh_client = mocker.Mock()
+    ssh_conn.ssh_client = mocker.Mock()
+
+    # Call disconnect
+    ssh_conn.disconnect()
+
+    # Assert close methods were called
+    ssh_conn.sftp_client.close.assert_called_once()
+    ssh_conn.sftp_ssh_client.close.assert_called_once()
+    ssh_conn.ssh_client.close.assert_called_once()
+
+def test_secure_ssh_client_init(mocker):
+    # Mock logging.info
+    mock_log_info = mocker.patch("logging.info")
+    # Mock SshClient.__init__ to avoid real SSH connection attempts
+    mock_super_init = mocker.patch.object(SshClient, "__init__", return_value=None)
+
+    server = "test.server.com"
+    username = "testuser"
+    sftp = "test.sftp.server"
+    port = 2222
+
+    client = SecureSshClient(server=server, username=username, sftp=sftp, port=port)
+
+    mock_log_info.assert_called_once_with("🔐 Secure mode: only key-based login allowed.")
+   #mock_super_init.assert_called_once_with(server, username, None, port, sftp)
+    assert isinstance(client, SecureSshClient)

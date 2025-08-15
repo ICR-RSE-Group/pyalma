@@ -197,12 +197,16 @@ class SshClient(FileReader):
         :raises TypeError: If data is not string or DataFrame.
         """
         if isinstance(data, pd.DataFrame):
-            if file_format in ["csv", "tsv"]:
+            if file_format in ["csv"]:
                 buffer = StringIO()
                 data.to_csv(buffer, index=False)
                 file_content = buffer.getvalue()
+            elif file_format in ["tsv"]:
+                buffer = StringIO()
+                data.to_csv(buffer, index=False, sep="\t")
+                file_content = buffer.getvalue()            
             else:
-                raise ValueError("❌ [write_to_remote_file]: Unsupported file format for DataFrame. Use 'csv'.")
+                raise ValueError("❌ [write_to_remote_file]: Unsupported file format for DataFrame. Use 'csv' or 'tsv'.")
         elif isinstance(data, str):
             file_content = data
         else:

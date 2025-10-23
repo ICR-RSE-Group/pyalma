@@ -107,7 +107,7 @@ class SshClient(FileReader):
         """
         try:
             _, stdout, _ = self.ssh_client.exec_command(command)
-            output = stdout.read().decode("utf-8")
+            output = stdout.read().decode("ascii")
             return {"output": self.filter_output(output), "err": None}
         except Exception as e:
             logging.error(f"❌ [run_cmd]: Error executing SSH command {command}: {e}")

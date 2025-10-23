@@ -3,3 +3,4 @@ pyalma.egg-info/*
 pyalma/__pycache__/*
 dist/*
 .gitignore
+.env-py/lib/python3.12/site-packages/llvmlite/binding/libllvmlite.so

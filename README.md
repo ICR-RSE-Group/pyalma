@@ -1,7 +1,11 @@
 # Pyalma
 
 A Python library for SSH connections and remote command execution using Paramiko.
-
+## To Install pyalma using pip (no need to download the code)
+Run the following in your Python environment:
+```bash
+pip install "pyalma @ git+https://github.com/ICR-RSE-Group/pyalma.git@main"
+```
 ## To build and install the package locally:
 1. Clone this repo locally to your machine:
 Make sure to navigate to the package directory before building
